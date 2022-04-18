@@ -1,5 +1,5 @@
-drop table if exists cpm.business_role_relations;
-create table cpm.business_role_relations
+drop table if exists cpm.business_role_relation;
+create table cpm.business_role_relation
 (
     role_id   bigint not null,
     parent_id bigint not null,

@@ -1,5 +1,6 @@
 package dev.rmaiun.cpm.doman;
 
+import java.util.StringJoiner;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ public class Application {
   public Application() {
   }
 
-  public Application(Long id, String name) {
+  public Application(String name) {
     this.id = id;
     this.name = name;
   }
@@ -38,5 +39,13 @@ public class Application {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", Application.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("name='" + name + "'")
+        .toString();
   }
 }

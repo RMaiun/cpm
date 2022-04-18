@@ -1,5 +1,6 @@
 package dev.rmaiun.cpm.doman;
 
+import java.util.StringJoiner;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,7 +28,7 @@ public class DomainObject {
   public DomainObject() {
   }
 
-  public DomainObject(Long id, String code, Application app) {
+  public DomainObject(String code, Application app) {
     this.id = id;
     this.code = code;
     this.app = app;
@@ -55,5 +56,14 @@ public class DomainObject {
 
   public void setApp(Application app) {
     this.app = app;
+  }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", DomainObject.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("code='" + code + "'")
+        .add("app=" + app)
+        .toString();
   }
 }

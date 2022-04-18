@@ -1,5 +1,8 @@
 package dev.rmaiun.cpm.doman;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.StringJoiner;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,10 +11,12 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-@Entity
+@Entity(name = "BusinessRole")
 @Table(name = "business_role")
 public class BusinessRole {
 
@@ -27,14 +32,29 @@ public class BusinessRole {
   @JoinColumn(name = "object_id", nullable = false)
   private DomainObject object;
 
+  @ManyToMany(cascade = {CascadeType.ALL},fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "business_role_relation",
+      joinColumns = {@JoinColumn(name = "parent_id")},
+      inverseJoinColumns = {@JoinColumn(name = "role_id")}
+  )
+  private Set<BusinessRole> children = new HashSet<>();
+
   public BusinessRole() {
   }
 
-  public BusinessRole(Long id, String code, String workspace, DomainObject object) {
-    this.id = id;
+  public BusinessRole(String code, String workspace, DomainObject object) {
     this.code = code;
     this.workspace = workspace;
     this.object = object;
+  }
+
+  public Set<BusinessRole> getChildren() {
+    return children;
+  }
+
+  public void setChildren(Set<BusinessRole> children) {
+    this.children = children;
   }
 
   public Long getId() {
@@ -67,5 +87,25 @@ public class BusinessRole {
 
   public void setObject(DomainObject object) {
     this.object = object;
+  }
+
+  // public BusinessRole getParent() {
+  //   return parent;
+  // }
+  //
+  // public void setParent(BusinessRole parent) {
+  //   this.parent = parent;
+  // }
+
+  @Override
+  public String toString() {
+    return new StringJoiner(", ", BusinessRole.class.getSimpleName() + "[", "]")
+        .add("id=" + id)
+        .add("code='" + code + "'")
+        .add("workspace='" + workspace + "'")
+        .add("object=" + object)
+        .add("children=" + children)
+        // .add("parent=" + parent)
+        .toString();
   }
 }
