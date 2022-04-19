@@ -4,6 +4,7 @@ import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.BusinessRole;
 import dev.rmaiun.cpm.doman.Domain;
+import dev.rmaiun.cpm.doman.view.GroupView;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.repository.BusinessRoleRepository;
 import dev.rmaiun.cpm.repository.DomainRepository;
@@ -34,8 +35,13 @@ public class CpmApplication implements CommandLineRunner {
   }
 
   @Override
-  @Transactional
   public void run(String... args) throws Exception {
+    var businessGroups = prepareData();
+    System.out.println(businessGroups);
+  }
+
+  @Transactional
+  public List<GroupView> prepareData() {
     Application app = appRepo.save(new Application(null, "someapp"));
     System.out.println("app");
     var domain = domainObjectRepo.save(new Domain("someService", app));
@@ -50,9 +56,9 @@ public class CpmApplication implements CommandLineRunner {
     businessRoleRepo.save(br3);
 
     var g1 = new BusinessGroup(null, "CatsReaders", domain, Set.of(br1, br2));
-    var g2 = new BusinessGroup(null, "CatsWriters", domain, Set.of(br1, br2));
-    groupRepository.saveAll(List.of(g1, g2));
-    List<BusinessGroup> businessGroups = groupRepository.listByDomain(domain.getCode());
-    System.out.println(businessGroups);
+    // var g2 = new BusinessGroup(null, "CatsWriters", domain, Set.of(br1, br2));
+    // groupRepository.saveAll(List.of(g1, g2));
+    groupRepository.saveAll(List.of(g1));
+    return groupRepository.listByDomain(domain.getCode());
   }
 }
