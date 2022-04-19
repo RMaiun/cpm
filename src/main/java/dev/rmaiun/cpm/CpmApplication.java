@@ -1,13 +1,15 @@
 package dev.rmaiun.cpm;
 
 import dev.rmaiun.cpm.doman.Application;
+import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.BusinessRole;
-import dev.rmaiun.cpm.doman.DomainObject;
+import dev.rmaiun.cpm.doman.Domain;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.repository.BusinessRoleRepository;
-import dev.rmaiun.cpm.repository.DomainObjectRepository;
+import dev.rmaiun.cpm.repository.DomainRepository;
+import dev.rmaiun.cpm.repository.GroupRepository;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,9 +22,12 @@ public class CpmApplication implements CommandLineRunner {
   @Autowired
   private ApplicationRepository appRepo;
   @Autowired
-  private DomainObjectRepository domainObjectRepo;
+  private DomainRepository domainObjectRepo;
   @Autowired
   private BusinessRoleRepository businessRoleRepo;
+
+  @Autowired
+  private GroupRepository groupRepository;
 
   public static void main(String[] args) {
     SpringApplication.run(CpmApplication.class, args);
@@ -31,21 +36,23 @@ public class CpmApplication implements CommandLineRunner {
   @Override
   @Transactional
   public void run(String... args) throws Exception {
-    // Application app = appRepo.save(new Application("someapp"));
-    // System.out.println("app");
-    // var object = domainObjectRepo.save(new DomainObject("someService", app));
-    // System.out.println("object");
-    // var br1 = new BusinessRole("br1", null, object);
-    // var br2 = new BusinessRole("br2", null, object);
-    // businessRoleRepo.saveAll(List.of(br1, br2));
-    // System.out.println("br1, br2");
-    // var br3 = new BusinessRole("br3", null, object);
-    // br3.getChildren().add(br1);
-    // businessRoleRepo.save(br3);
-    // System.out.println("br3");
-    // br1.getChildren().add(new BusinessRole("br1_1",null, object));
-    // businessRoleRepo.save(br1);
-    var byId = businessRoleRepo.findByParent(47L);
-    System.out.println(byId);
+    Application app = appRepo.save(new Application(null, "someapp"));
+    System.out.println("app");
+    var domain = domainObjectRepo.save(new Domain("someService", app));
+    System.out.println("domain");
+    var br1 = new BusinessRole(null, "br1", domain);
+    var br2 = new BusinessRole(null, "br2", domain);
+    // var businessRoles = businessRoleRepo.saveAll(List.of(br1, br2));
+    System.out.println("br1, br2");
+    var br3 = new BusinessRole(null, "br3", domain);
+    businessRoleRepo.save(br1);
+    businessRoleRepo.save(br2);
+    businessRoleRepo.save(br3);
+
+    var g1 = new BusinessGroup(null, "CatsReaders", domain, Set.of(br1, br2));
+    var g2 = new BusinessGroup(null, "CatsWriters", domain, Set.of(br1, br2));
+    groupRepository.saveAll(List.of(g1, g2));
+    List<BusinessGroup> businessGroups = groupRepository.listByDomain(domain.getCode());
+    System.out.println(businessGroups);
   }
 }

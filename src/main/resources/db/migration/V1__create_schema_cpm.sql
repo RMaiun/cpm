@@ -1,1 +1,1 @@
-create schema cpm;
+create schema if not exists cpm;

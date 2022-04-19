@@ -13,8 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "object")
-public class DomainObject {
+public class Domain {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,10 +24,10 @@ public class DomainObject {
   @JoinColumn(name = "app_id")
   private Application app;
 
-  public DomainObject() {
+  public Domain() {
   }
 
-  public DomainObject(String code, Application app) {
+  public Domain(String code, Application app) {
     this.id = id;
     this.code = code;
     this.app = app;
@@ -60,7 +59,7 @@ public class DomainObject {
 
   @Override
   public String toString() {
-    return new StringJoiner(", ", DomainObject.class.getSimpleName() + "[", "]")
+    return new StringJoiner(", ", Domain.class.getSimpleName() + "[", "]")
         .add("id=" + id)
         .add("code='" + code + "'")
         .add("app=" + app)
