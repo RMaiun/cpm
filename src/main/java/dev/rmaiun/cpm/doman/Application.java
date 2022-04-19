@@ -1,24 +1,14 @@
 package dev.rmaiun.cpm.doman;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import dev.rmaiun.cpm.repository.DbMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
+public record Application(Long id, String code) implements DbMapper {
 
-@Entity
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-public class Application {
-
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  @Column
-  private String code;
+  @Override
+  public SqlParameterSource asSource() {
+    return new MapSqlParameterSource("id", id)
+        .addValue("code", code);
+  }
 }

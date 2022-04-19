@@ -1,68 +1,6 @@
 package dev.rmaiun.cpm.doman;
 
-import java.util.StringJoiner;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
-@Entity
-public class Domain {
+public record Domain(Long id, String code, Long appId) {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-  @Column
-  private String code;
-  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
-  @JoinColumn(name = "app_id")
-  private Application app;
-
-  public Domain() {
-  }
-
-  public Domain(String code, Application app) {
-    this.id = id;
-    this.code = code;
-    this.app = app;
-  }
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public String getCode() {
-    return code;
-  }
-
-  public void setCode(String code) {
-    this.code = code;
-  }
-
-  public Application getApp() {
-    return app;
-  }
-
-  public void setApp(Application app) {
-    this.app = app;
-  }
-
-  @Override
-  public String toString() {
-    return new StringJoiner(", ", Domain.class.getSimpleName() + "[", "]")
-        .add("id=" + id)
-        .add("code='" + code + "'")
-        .add("app=" + app)
-        .toString();
-  }
 }
