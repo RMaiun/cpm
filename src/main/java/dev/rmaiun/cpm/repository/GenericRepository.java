@@ -31,8 +31,12 @@ public abstract class GenericRepository<T extends DbMapper> {
   }
 
   public long clearTable() {
-    var query = String.format("DELETE FROM %s", table());
+    var query = String.format("TRUNCATE TABLE %s", table());
     return jdbcTemplate.update(query, new HashMap<>());
   }
+
+  // public long countRowsBy(){
+  //   jdbcTemplate.query("select count()")
+  // }
 
 }
