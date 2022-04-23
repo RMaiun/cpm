@@ -1,66 +1,33 @@
 package dev.rmaiun.cpm.repository;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import dev.rmaiun.cpm.config.TestContainersSetup;
 import dev.rmaiun.cpm.doman.Application;
+import java.util.Objects;
+import java.util.Optional;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@ContextConfiguration(initializers = {ApplicationRepositoryTest.Initializer.class})
-@Testcontainers
-@DirtiesContext
 @Sql(scripts = {
     "/db/migration/V1__create_schema_cpm.sql",
     "/db/migration/V2__create_app_table.sql"
 }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class ApplicationRepositoryTest {
-
-  @Container
-  public static PostgreSQLContainer<?> postgresDB = new PostgreSQLContainer<>("postgres:10.5")
-      .withDatabaseName("postgres")
-      .withUsername("postgres")
-      .withPassword("postgres")
-      .withUrlParam("currentSchema", "cpm");
-
-  @DynamicPropertySource
-  public static void properties(DynamicPropertyRegistry registry) {
-    System.out.println("!!!!!!!!! " + postgresDB.getJdbcUrl());
-    registry.add("spring.datasource.url", postgresDB::getJdbcUrl);
-    registry.add("spring.datasource.username", postgresDB::getUsername);
-    registry.add("spring.datasource.password", postgresDB::getPassword);
-
-  }
-
-  static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-    @Override
-    public void initialize(ConfigurableApplicationContext applicationContext) {
-      TestPropertyValues.of(
-          "spring.datasource.url=" + postgresDB.getJdbcUrl(),
-          "spring.datasource.username=" + postgresDB.getUsername(),
-          "spring.datasource.password=" + postgresDB.getPassword()
-      ).applyTo(applicationContext.getEnvironment());
-    }
-  }
+public class ApplicationRepositoryTest extends TestContainersSetup {
 
   @Autowired
   private ApplicationRepository applicationRepository;
@@ -71,13 +38,53 @@ public class ApplicationRepositoryTest {
   @After
   public void cleanWorkspace() {
     applicationRepository.clearTable();
-
   }
 
   @Test
+  @DisplayName("Application is successfully created")
   public void storeAppSuccessfully() {
     var app = new Application(null, "testApp");
     long id = applicationRepository.save(app);
-    Assertions.assertTrue(id > 0);
+    assertTrue(id > 0);
+    Optional<Application> found = applicationRepository.getById(id);
+    assertTrue(found.isPresent());
+    assertEquals(app.code(), found.get().code());
+  }
+
+  @Test
+  @DisplayName("Application is not found")
+  public void appNotFound() {
+    var app = new Application(null, "testApp");
+    applicationRepository.save(app);
+    Optional<Application> found = applicationRepository.getById(34L);
+    assertTrue(found.isEmpty());
+  }
+
+  @Test
+  @DisplayName("Application is successfully deleted")
+  public void deleteExisted() {
+    var app = new Application(null, "testApp");
+    long id = applicationRepository.save(app);
+    Optional<Application> found = applicationRepository.getById(id);
+    assertTrue(found.isPresent());
+    var deletedElements = applicationRepository.delete(id);
+    assertEquals(1, deletedElements);
+    var all = applicationRepository.listAll();
+    assertTrue(Objects.nonNull(all));
+    assertTrue(all.isEmpty());
+  }
+
+  @Test
+  @DisplayName("Application is not deleted")
+  public void skipDeleteExisted() {
+    var app = new Application(null, "testApp");
+    long id = applicationRepository.save(app);
+    Optional<Application> found = applicationRepository.getById(id);
+    assertTrue(found.isPresent());
+    var deletedElements = applicationRepository.delete(34L);
+    assertEquals(0, deletedElements);
+    var all = applicationRepository.listAll();
+    assertTrue(Objects.nonNull(all));
+    assertThat(all, hasSize(1));
   }
 }

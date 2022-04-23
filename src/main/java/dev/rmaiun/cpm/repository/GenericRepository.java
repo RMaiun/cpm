@@ -1,11 +1,14 @@
 package dev.rmaiun.cpm.repository;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-public abstract class GenericRepository<T extends DbMapper> {
+public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
 
   private final NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -21,7 +24,20 @@ public abstract class GenericRepository<T extends DbMapper> {
     }
     var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
         .withTableName(table()).usingGeneratedKeyColumns("id");
-    return simpleJdbcInsert.executeAndReturnKey(entity.asSource()).longValue();
+    return simpleJdbcInsert.executeAndReturnKey(parameterSource(entity)).longValue();
+  }
+
+  public Optional<T> getById(Long id) {
+    var query = String.format("SELECT * from %s t where t.id = :id", table());
+    var params = new MapSqlParameterSource("id", id);
+    List<T> res = jdbcTemplate.query(query, params, rowMapper());
+    return Optional.ofNullable(DataAccessUtils.singleResult(res));
+  }
+
+  public List<T> listAll() {
+    var query = String.format("SELECT * from %s t", table());
+    var params = new MapSqlParameterSource();
+    return jdbcTemplate.query(query, params, rowMapper());
   }
 
   public long delete(Long id) {

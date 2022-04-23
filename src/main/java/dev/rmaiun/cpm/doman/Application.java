@@ -1,14 +1,8 @@
 package dev.rmaiun.cpm.doman;
 
-import dev.rmaiun.cpm.repository.DbMapper;
+import dev.rmaiun.cpm.repository.CommonRepoSupport;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 
-public record Application(Long id, String code) implements DbMapper {
-
-  @Override
-  public SqlParameterSource asSource() {
-    return new MapSqlParameterSource("id", id)
-        .addValue("code", code);
-  }
-}
+public record Application(Long id, String code) { }

@@ -33,6 +33,7 @@ dependencies {
   implementation 'org.springframework.boot:spring-boot-starter-web'
   implementation 'org.springframework.boot:spring-boot-starter-jdbc'
   implementation 'org.apache.commons:commons-lang3:3.12.0'
+  implementation 'org.apache.commons:commons-collections4:4.4'
 //  implementation 'org.flywaydb:flyway-core'
   developmentOnly 'org.springframework.boot:spring-boot-devtools'
   runtimeOnly 'org.postgresql:postgresql'
@@ -41,6 +42,7 @@ dependencies {
   testImplementation 'org.springframework.security:spring-security-test'
   testImplementation 'org.testcontainers:junit-jupiter'
   testImplementation 'org.testcontainers:postgresql'
+  testImplementation 'org.hamcrest:hamcrest:2.2'
 }
 
 dependencyManagement {
