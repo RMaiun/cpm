@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.repository;
+package dev.rmaiun.cpm.repository.core;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +47,7 @@ public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
   }
 
   public long clearTable() {
-    var query = String.format("TRUNCATE TABLE %s", table());
+    var query = String.format("DELETE FROM %s", table());
     return jdbcTemplate.update(query, new HashMap<>());
   }
 

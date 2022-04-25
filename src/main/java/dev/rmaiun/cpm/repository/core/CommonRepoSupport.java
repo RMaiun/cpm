@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.repository;
+package dev.rmaiun.cpm.repository.core;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;

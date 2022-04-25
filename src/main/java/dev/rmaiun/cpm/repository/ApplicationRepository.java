@@ -1,6 +1,7 @@
 package dev.rmaiun.cpm.repository;
 
 import dev.rmaiun.cpm.doman.Application;
+import dev.rmaiun.cpm.repository.core.GenericRepository;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,11 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ApplicationRepository extends GenericRepository<Application> {
 
-  private final NamedParameterJdbcTemplate jdbcTemplate;
-
-  public ApplicationRepository(NamedParameterJdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate jdbcTemplate1) {
+  public ApplicationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
-    this.jdbcTemplate = jdbcTemplate1;
   }
 
 

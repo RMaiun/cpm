@@ -3,6 +3,6 @@ create table cpm.business_group
 (
     id        bigserial primary key,
     code      varchar not null,
-    domain_id bigint  not null,
-    constraint group_domain_fk foreign key (domain_id) references cpm.domain (id)
+    app_id bigint  not null,
+    constraint group_domain_fk foreign key (app_id) references cpm.application (id)
 );
