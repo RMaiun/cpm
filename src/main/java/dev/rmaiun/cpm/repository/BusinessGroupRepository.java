@@ -1,5 +1,6 @@
 package dev.rmaiun.cpm.repository;
 
+import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
 import java.sql.ResultSet;
@@ -18,18 +19,18 @@ public class BusinessGroupRepository extends GenericRepository<BusinessGroup> {
   }
 
   @Override
-  public SqlParameterSource parameterSource(BusinessGroup object) {
-    return new MapSqlParameterSource("id", object.id())
-        .addValue("code", object.code())
-        .addValue("app_id", object.appId());
+  public SqlParameterSource parameterSource(BusinessGroup o) {
+    return new MapSqlParameterSource("id", o.id())
+        .addValue("code", o.code())
+        .addValue("app_id", o.appId());
   }
 
   @Override
   public RowMapper<BusinessGroup> rowMapper() {
     return (rs, rowNum) -> {
-      var id = rs.getLong(0);
-      var code = rs.getString(1);
-      var appId = rs.getLong(2);
+      var id = rs.getLong("id");
+      var code = rs.getString("code");
+      var appId = rs.getLong("app_id");
       return new BusinessGroup(id, code, appId);
     };
   }
@@ -37,5 +38,9 @@ public class BusinessGroupRepository extends GenericRepository<BusinessGroup> {
   @Override
   protected String table() {
     return "business_group";
+  }
+  @Override
+  public Class<BusinessGroup> clazz() {
+    return BusinessGroup.class;
   }
 }

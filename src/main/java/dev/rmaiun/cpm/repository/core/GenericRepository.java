@@ -1,16 +1,19 @@
 package dev.rmaiun.cpm.repository.core;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
 
-  private final NamedParameterJdbcTemplate jdbcTemplate;
+  protected final NamedParameterJdbcTemplate jdbcTemplate;
 
   public GenericRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
@@ -25,6 +28,16 @@ public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
     var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
         .withTableName(table()).usingGeneratedKeyColumns("id");
     return simpleJdbcInsert.executeAndReturnKey(parameterSource(entity)).longValue();
+  }
+
+  public long batchSave(Collection<T> entity) {
+    if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
+      throw new RuntimeException("Data Source is not defined");
+    }
+    var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
+        .withTableName(table()).usingGeneratedKeyColumns("id");
+    var sourceList = entity.stream().map(this::parameterSource).toArray(SqlParameterSource[]::new);
+    return Arrays.stream(simpleJdbcInsert.executeBatch(sourceList)).reduce(0, Integer::sum);
   }
 
   public Optional<T> getById(Long id) {

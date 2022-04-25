@@ -1,7 +1,11 @@
 package dev.rmaiun.cpm.repository;
 
+import static java.util.Optional.ofNullable;
+import static org.springframework.dao.support.DataAccessUtils.singleResult;
+
 import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -15,6 +19,12 @@ public class ApplicationRepository extends GenericRepository<Application> {
     super(jdbcTemplate);
   }
 
+  public Optional<Application> getByCode(String code) {
+    var query = "SELECT * FROM application WHERE code = :code";
+    var params = new MapSqlParameterSource("code", code);
+    return ofNullable(singleResult(jdbcTemplate.query(query, params, rowMapper())));
+  }
+
 
   @Override
   protected String table() {
@@ -22,13 +32,18 @@ public class ApplicationRepository extends GenericRepository<Application> {
   }
 
   @Override
-  public SqlParameterSource parameterSource(Application object) {
-    return new MapSqlParameterSource("id", object.id())
-        .addValue("code", object.code());
+  public SqlParameterSource parameterSource(Application o) {
+    return new MapSqlParameterSource("id", o.id())
+        .addValue("code", o.code());
   }
 
   @Override
   public RowMapper<Application> rowMapper() {
     return (rs, rowNum) -> new Application(rs.getLong("id"), rs.getString("code"));
+  }
+
+  @Override
+  public Class<Application> clazz() {
+    return Application.class;
   }
 }

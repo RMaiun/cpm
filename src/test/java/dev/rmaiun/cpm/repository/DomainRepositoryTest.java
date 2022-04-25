@@ -44,7 +44,7 @@ public class DomainRepositoryTest extends TestContainersSetup {
   }
 
   @Test
-  @DisplayName("Imposible to store domain without app")
+  @DisplayName("Impossible to store domain without app")
   public void errorDomainWithoutApp() {
     var domain = new Domain(1L, "test", 3L);
     try {
@@ -65,10 +65,10 @@ public class DomainRepositoryTest extends TestContainersSetup {
     var foundDomain = domainRepo.getById(domId);
     assertTrue(foundDomain.isPresent());
     var foundDom = foundDomain.get();
-    assertEquals(domain.code(), foundDom.code());
+    assertEquals(domain.getCode(), foundDom.getCode());
     var foundList = domainRepo.listAll();
     assertThat(foundList, hasSize(1));
-    var removedNumbers = domainRepo.delete(foundDom.id());
+    var removedNumbers = domainRepo.delete(foundDom.getId());
     assertThat(removedNumbers, equalTo(1));
   }
 }

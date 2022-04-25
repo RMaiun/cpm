@@ -1,5 +1,5 @@
 package dev.rmaiun.cpm.doman;
 
-public record BusinessRole(Long id, String code, Long domainId) {
+public record BusinessRole(Long id, Long domainId, RoleType type) {
 
 }

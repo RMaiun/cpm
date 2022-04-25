@@ -16,18 +16,18 @@ public class DomainRepository extends GenericRepository<Domain> {
   }
 
   @Override
-  public SqlParameterSource parameterSource(Domain object) {
-    return new MapSqlParameterSource("id", object.id())
-        .addValue("code", object.code())
-        .addValue("app_id", object.appId());
+  public SqlParameterSource parameterSource(Domain o) {
+    return new MapSqlParameterSource("id", o.getId())
+        .addValue("code", o.getCode())
+        .addValue("app_id", o.getAppId());
   }
 
   @Override
   public RowMapper<Domain> rowMapper() {
     return (rs, rowNum) -> {
-      var id = rs.getLong(0);
-      var code = rs.getString(1);
-      var appId = rs.getLong(2);
+      var id = rs.getLong("id");
+      var code = rs.getString("code");
+      var appId = rs.getLong("app_id");
       return new Domain(id, code, appId);
     };
   }
@@ -35,5 +35,10 @@ public class DomainRepository extends GenericRepository<Domain> {
   @Override
   protected String table() {
     return "domain";
+  }
+
+  @Override
+  public Class<Domain> clazz() {
+    return Domain.class;
   }
 }

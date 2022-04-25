@@ -1,6 +1,7 @@
 package dev.rmaiun.cpm.repository;
 
 import dev.rmaiun.cpm.doman.BusinessRole;
+import dev.rmaiun.cpm.doman.RoleType;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -16,24 +17,29 @@ public class BusinessRoleRepository extends GenericRepository<BusinessRole> {
   }
 
   @Override
-  public SqlParameterSource parameterSource(BusinessRole object) {
-    return new MapSqlParameterSource("id", object.id())
-        .addValue("code", object.code())
-        .addValue("domain_id", object.domainId());
+  public SqlParameterSource parameterSource(BusinessRole o) {
+    return new MapSqlParameterSource("id", o.id())
+        .addValue("domain_id", o.domainId())
+        .addValue("role_type", o.type());
   }
 
   @Override
   public RowMapper<BusinessRole> rowMapper() {
     return (rs, rowNum) -> {
-      var id = rs.getLong(0);
-      var code = rs.getString(1);
-      var domId = rs.getLong(2);
-      return new BusinessRole(id, code, domId);
+      var id = rs.getLong("id");
+      var domId = rs.getLong("domain_id");
+      var type = rs.getString("role_type");
+      return new BusinessRole(id, domId, RoleType.valueOf(type));
     };
   }
 
   @Override
   protected String table() {
     return "business_role";
+  }
+
+  @Override
+  public Class<BusinessRole> clazz() {
+    return BusinessRole.class;
   }
 }
