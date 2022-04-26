@@ -1,0 +1,38 @@
+{
+  "domains": [
+    {
+      "code": "configuration",
+      "implicitConfiguration": {
+        "ConfigurationManagers": "RW",
+        "Auditors": "R"
+      },
+      "directConfiguration": {
+        "ApplicationConfigManagers": "RW",
+        "GatewaySubapp": "RW"
+      }
+    },
+    {
+      "code": "area",
+      "parent": "configuration",
+      "directConfiguration": {
+        "AreaManagers": "RW",
+        "AreaAuditors": "R"
+      }
+    }
+  ],
+  "relations": [
+    {
+      "user": "13-2936-1",
+      "groups": [
+        "ConfigurationManagers"
+      ]
+    },
+    {
+      "user": "21-0101-1",
+      "groups": [
+        "GatewaySubapp",
+        "Auditors"
+      ]
+    }
+  ]
+}
