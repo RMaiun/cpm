@@ -1,10 +1,7 @@
 package dev.rmaiun.cpm.repository;
 
-import dev.rmaiun.cpm.doman.Application;
-import dev.rmaiun.cpm.doman.BusinessGroup;
+import dev.rmaiun.cpm.doman.DomainToDomain;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,31 +9,31 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BusinessGroupRepository extends GenericRepository<BusinessGroup> {
+public class DomainToDomainRepository extends GenericRepository<DomainToDomain> {
 
-  public BusinessGroupRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+  public DomainToDomainRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
   }
 
   @Override
-  public SqlParameterSource parameterSource(BusinessGroup o) {
+  public SqlParameterSource parameterSource(DomainToDomain o) {
     return new MapSqlParameterSource("id", o.id())
-        .addValue("code", o.code())
-        .addValue("app_id", o.appId());
+        .addValue("domain_id", o.domainId())
+        .addValue("parent_id", o.parentId());
   }
 
   @Override
-  public RowMapper<BusinessGroup> rowMapper() {
+  public RowMapper<DomainToDomain> rowMapper() {
     return (rs, rowNum) -> {
       var id = rs.getLong("id");
-      var code = rs.getString("code");
-      var appId = rs.getLong("app_id");
-      return new BusinessGroup(id, code, appId);
+      var groupId = rs.getLong("domain_id");
+      var parentId = rs.getLong("parent_id");
+      return new DomainToDomain(id, groupId, parentId);
     };
   }
 
   @Override
   protected String table() {
-    return "business_group";
+    return "domain_to_domain";
   }
 }

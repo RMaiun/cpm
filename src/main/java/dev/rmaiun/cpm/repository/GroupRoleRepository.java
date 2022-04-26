@@ -34,9 +34,4 @@ public class GroupRoleRepository extends GenericRepository<GroupRoleRelation> {
   protected String table() {
     return "group_role";
   }
-
-  @Override
-  public Class<GroupRoleRelation> clazz() {
-    return GroupRoleRelation.class;
-  }
 }

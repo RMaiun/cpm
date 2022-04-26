@@ -17,9 +17,9 @@ public class DomainRepository extends GenericRepository<Domain> {
 
   @Override
   public SqlParameterSource parameterSource(Domain o) {
-    return new MapSqlParameterSource("id", o.getId())
-        .addValue("code", o.getCode())
-        .addValue("app_id", o.getAppId());
+    return new MapSqlParameterSource("id", o.id())
+        .addValue("code", o.code())
+        .addValue("app_id", o.appId());
   }
 
   @Override
@@ -35,10 +35,5 @@ public class DomainRepository extends GenericRepository<Domain> {
   @Override
   protected String table() {
     return "domain";
-  }
-
-  @Override
-  public Class<Domain> clazz() {
-    return Domain.class;
   }
 }

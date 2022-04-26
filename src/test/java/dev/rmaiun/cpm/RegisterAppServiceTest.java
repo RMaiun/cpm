@@ -13,6 +13,7 @@ import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.repository.BusinessGroupRepository;
 import dev.rmaiun.cpm.repository.BusinessRoleRepository;
 import dev.rmaiun.cpm.repository.DomainRepository;
+import dev.rmaiun.cpm.repository.DomainToDomainRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
 import dev.rmaiun.cpm.repository.UserGroupRelationRepository;
 import dev.rmaiun.cpm.service.RegisterAppService;
@@ -38,6 +39,7 @@ import org.springframework.test.context.junit4.SpringRunner;
     "/db/migration/V5__create_business_group_table.sql",
     "/db/migration/V6__create_group_role_table.sql",
     "/db/migration/V7__create_user_group_table.sql",
+    "/db/migration/V8__create_domain_to_domain_table.sql"
 }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class RegisterAppServiceTest extends TestContainersSetup {
 
@@ -55,6 +57,8 @@ public class RegisterAppServiceTest extends TestContainersSetup {
   private UserGroupRelationRepository userGroupRelationRepo;
   @Autowired
   private RegisterAppService registerAppService;
+  @Autowired
+  private DomainToDomainRepository domainToDomainRepo;
   @Autowired
   private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -91,5 +95,7 @@ public class RegisterAppServiceTest extends TestContainersSetup {
     assertEquals(2, storedGroupRoles.size());
     var storedUserGroups = userGroupRelationRepo.listAll();
     assertEquals(2, storedUserGroups.size());
+    var domainToDomains = domainToDomainRepo.listAll();
+    assertEquals(1, domainToDomains.size());
   }
 }

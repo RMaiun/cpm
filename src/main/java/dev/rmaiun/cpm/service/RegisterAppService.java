@@ -8,6 +8,7 @@ import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.BusinessRole;
 import dev.rmaiun.cpm.doman.Domain;
+import dev.rmaiun.cpm.doman.DomainToDomain;
 import dev.rmaiun.cpm.doman.GroupRoleRelation;
 import dev.rmaiun.cpm.doman.RoleType;
 import dev.rmaiun.cpm.doman.UserGroupRelation;
@@ -18,6 +19,7 @@ import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.repository.BusinessGroupRepository;
 import dev.rmaiun.cpm.repository.BusinessRoleRepository;
 import dev.rmaiun.cpm.repository.DomainRepository;
+import dev.rmaiun.cpm.repository.DomainToDomainRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
 import dev.rmaiun.cpm.repository.UserGroupRelationRepository;
 import java.util.List;
@@ -33,15 +35,17 @@ public class RegisterAppService {
   private final DomainRepository domainRepo;
   private final GroupRoleRepository groupRoleRepo;
   private final UserGroupRelationRepository userGroupRelationRepo;
+  private final DomainToDomainRepository domainToDomainRepo;
 
   public RegisterAppService(ApplicationRepository appRepo, BusinessGroupRepository businessGroupRepo, BusinessRoleRepository businessRoleRepo, DomainRepository domainRepo,
-      GroupRoleRepository groupRoleRepo, UserGroupRelationRepository userGroupRelationRepo) {
+      GroupRoleRepository groupRoleRepo, UserGroupRelationRepository userGroupRelationRepo, DomainToDomainRepository groupToGroupRelationRepo, DomainToDomainRepository domainToDomainRepo) {
     this.appRepo = appRepo;
     this.businessGroupRepo = businessGroupRepo;
     this.businessRoleRepo = businessRoleRepo;
     this.domainRepo = domainRepo;
     this.groupRoleRepo = groupRoleRepo;
     this.userGroupRelationRepo = userGroupRelationRepo;
+    this.domainToDomainRepo = domainToDomainRepo;
   }
 
   @Transactional
@@ -58,9 +62,9 @@ public class RegisterAppService {
     var domain = new Domain(0L, ROOT_DOMAIN, appId);
     var domId = domainRepo.save(domain);
     // create default domain business roles
-    var reader = new BusinessRole(0L, domId, RoleType.READER);
+    var reader = new BusinessRole(0L, domId, RoleType.Reader);
     var readerId = businessRoleRepo.save(reader);
-    var writer = new BusinessRole(0L, domId, RoleType.WRITER);
+    var writer = new BusinessRole(0L, domId, RoleType.Writer);
     var writerId = businessRoleRepo.save(writer);
     // create default groups
     var ownersGroup = new BusinessGroup(0L, APP_OWNERS_GROUP, appId);
@@ -75,6 +79,10 @@ public class RegisterAppService {
     var userOwnerGroup = new UserGroupRelation(dto.owner(), ownersGroupId);
     var userManagerGroup = new UserGroupRelation(dto.owner(), managersGroupId);
     userGroupRelationRepo.batchSave(List.of(userOwnerGroup, userManagerGroup));
+    // create default domain relation
+    var d2d = new DomainToDomain(0L, domId, null);
+    domainToDomainRepo.save(d2d);
+    // return result
     return new RegisterAppDtoOut(appId, dto.app(), List.of(dto.owner()));
   }
 }

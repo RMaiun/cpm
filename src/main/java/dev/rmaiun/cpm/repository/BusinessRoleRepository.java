@@ -37,9 +37,4 @@ public class BusinessRoleRepository extends GenericRepository<BusinessRole> {
   protected String table() {
     return "business_role";
   }
-
-  @Override
-  public Class<BusinessRole> clazz() {
-    return BusinessRole.class;
-  }
 }

@@ -34,9 +34,4 @@ public class UserGroupRelationRepository extends GenericRepository<UserGroupRela
   protected String table() {
     return "user_group";
   }
-
-  @Override
-  public Class<UserGroupRelation> clazz() {
-    return UserGroupRelation.class;
-  }
 }

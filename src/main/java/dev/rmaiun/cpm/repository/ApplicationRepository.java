@@ -41,9 +41,4 @@ public class ApplicationRepository extends GenericRepository<Application> {
   public RowMapper<Application> rowMapper() {
     return (rs, rowNum) -> new Application(rs.getLong("id"), rs.getString("code"));
   }
-
-  @Override
-  public Class<Application> clazz() {
-    return Application.class;
-  }
 }

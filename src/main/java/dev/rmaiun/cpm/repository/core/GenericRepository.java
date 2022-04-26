@@ -1,25 +1,26 @@
 package dev.rmaiun.cpm.repository.core;
 
+import dev.rmaiun.cpm.exception.DatabaseException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
-public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
+public abstract class GenericRepository<T> {
 
   protected final NamedParameterJdbcTemplate jdbcTemplate;
 
   public GenericRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     this.jdbcTemplate = jdbcTemplate;
   }
-
-  protected abstract String table();
 
   public long save(T entity) {
     if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
@@ -28,6 +29,17 @@ public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
     var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
         .withTableName(table()).usingGeneratedKeyColumns("id");
     return simpleJdbcInsert.executeAndReturnKey(parameterSource(entity)).longValue();
+  }
+
+  public void saveWithoutId(T entity) {
+    if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
+      throw new DatabaseException("Data Source is not defined");
+    }
+    var paramSource = parameterSource(entity);
+    var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
+        .usingColumns(Objects.requireNonNull(paramSource.getParameterNames()))
+        .withTableName(table());
+    simpleJdbcInsert.execute(paramSource);
   }
 
   public long batchSave(Collection<T> entity) {
@@ -64,8 +76,10 @@ public abstract class GenericRepository<T> implements CommonRepoSupport<T> {
     return jdbcTemplate.update(query, new HashMap<>());
   }
 
-  // public long countRowsBy(){
-  //   jdbcTemplate.query("select count()")
-  // }
+  protected abstract SqlParameterSource parameterSource(T o);
+
+  protected abstract RowMapper<T> rowMapper();
+
+  protected abstract String table();
 
 }

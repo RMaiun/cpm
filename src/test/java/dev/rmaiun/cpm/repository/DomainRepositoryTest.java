@@ -65,10 +65,10 @@ public class DomainRepositoryTest extends TestContainersSetup {
     var foundDomain = domainRepo.getById(domId);
     assertTrue(foundDomain.isPresent());
     var foundDom = foundDomain.get();
-    assertEquals(domain.getCode(), foundDom.getCode());
+    assertEquals(domain.code(), foundDom.code());
     var foundList = domainRepo.listAll();
     assertThat(foundList, hasSize(1));
-    var removedNumbers = domainRepo.delete(foundDom.getId());
+    var removedNumbers = domainRepo.delete(foundDom.id());
     assertThat(removedNumbers, equalTo(1));
   }
 }
