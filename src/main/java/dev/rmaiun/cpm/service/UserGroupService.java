@@ -1,14 +1,20 @@
 package dev.rmaiun.cpm.service;
 
+import static java.util.Objects.isNull;
+
 import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.GroupRoleRelation;
+import dev.rmaiun.cpm.doman.UserGroupRelation;
 import dev.rmaiun.cpm.dto.GroupRoleDto;
+import dev.rmaiun.cpm.exception.GroupNotFoundException;
 import dev.rmaiun.cpm.repository.GroupRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
 import dev.rmaiun.cpm.repository.RoleRepository;
 import dev.rmaiun.cpm.repository.UserGroupRelationRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,12 +25,36 @@ public class UserGroupService {
   private final GroupRepository groupRepository;
   private final RoleRepository roleRepository;
 
+  public UserGroupService(GroupRoleRepository groupRoleRepository, UserGroupRelationRepository userGroupRelationRepository, GroupRepository groupRepository, RoleRepository roleRepository) {
+    this.groupRoleRepository = groupRoleRepository;
+    this.userGroupRelationRepository = userGroupRelationRepository;
+    this.groupRepository = groupRepository;
+    this.roleRepository = roleRepository;
+  }
+
   public void createMissingGroups(Application app, List<GroupRoleDto> groupRoles) {
     groupRoles.forEach(dto -> {
       var foundGroup = groupRepository.findByDomainCode(dto.group(), dto.domain())
           .orElseGet(() -> createGroup(app, dto));
       bindGroupToDomainRoles(app, dto, foundGroup);
     });
+  }
+
+  public void assignUserToGroup(Application app, Map<String, List<String>> groupUsers) {
+    var appGroups = groupRepository.findByApp(app.code())
+        .stream()
+        .collect(Collectors.toMap(BusinessGroup::code, BusinessGroup::id));
+    var absentGroups = groupUsers.keySet().stream()
+        .filter(g -> isNull(appGroups.get(g)))
+        .collect(Collectors.toSet());
+    if (!absentGroups.isEmpty()) {
+      throw new GroupNotFoundException(app.code(), String.join(",", absentGroups));
+    }
+    var userGroupRelations = groupUsers.entrySet().stream()
+        .flatMap(e -> e.getValue().stream()
+            .map(user -> new UserGroupRelation(user, appGroups.get(e.getKey()))))
+        .collect(Collectors.toSet());
+    userGroupRelationRepository.batchSave(userGroupRelations);
   }
 
   private void bindGroupToDomainRoles(Application app, GroupRoleDto dto, BusinessGroup group) {

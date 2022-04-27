@@ -2,6 +2,7 @@ package dev.rmaiun.cpm.repository;
 
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -14,6 +15,10 @@ public class GroupRepository extends GenericRepository<BusinessGroup> {
 
   public GroupRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
+  }
+
+  public List<BusinessGroup> findByApp(String app) {
+    return null;
   }
 
   public Optional<BusinessGroup> findByDomainCode(String group, String domain) {
