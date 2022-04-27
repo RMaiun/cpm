@@ -1,4 +1,5 @@
 {
+  "appCode": "MARI",
   "domains": [
     {
       "code": "configuration",
@@ -20,19 +21,13 @@
       }
     }
   ],
-  "relations": [
-    {
-      "user": "13-2936-1",
-      "groups": [
-        "ConfigurationManagers"
-      ]
-    },
-    {
-      "user": "21-0101-1",
-      "groups": [
-        "GatewaySubapp",
-        "Auditors"
-      ]
-    }
-  ]
+  "relations": {
+    "AreaManagers": [
+      "13-2936-1",
+      "12-4447-1"
+    ],
+    "GatewaySubapp": [
+      "21-0428-1"
+    ]
+  }
 }

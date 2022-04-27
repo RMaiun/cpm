@@ -2,6 +2,8 @@ package dev.rmaiun.cpm.repository;
 
 import dev.rmaiun.cpm.doman.Domain;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.Optional;
+import javax.swing.text.html.Option;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,6 +15,10 @@ public class DomainRepository extends GenericRepository<Domain> {
 
   public DomainRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
+  }
+
+  public Optional<Domain> findDomainByApplication(String domainCode, String appCode) {
+    return null;
   }
 
   @Override
