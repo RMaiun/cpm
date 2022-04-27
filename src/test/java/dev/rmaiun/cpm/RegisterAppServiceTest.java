@@ -10,8 +10,8 @@ import dev.rmaiun.cpm.dto.RegisterAppDtoIn;
 import dev.rmaiun.cpm.exception.AppAlreadyExistsException;
 import dev.rmaiun.cpm.exception.BusinessException;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
-import dev.rmaiun.cpm.repository.BusinessGroupRepository;
-import dev.rmaiun.cpm.repository.BusinessRoleRepository;
+import dev.rmaiun.cpm.repository.GroupRepository;
+import dev.rmaiun.cpm.repository.RoleRepository;
 import dev.rmaiun.cpm.repository.DomainRepository;
 import dev.rmaiun.cpm.repository.DomainToDomainRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
@@ -48,9 +48,9 @@ public class RegisterAppServiceTest extends TestContainersSetup {
   @Autowired
   private DomainRepository domainRepository;
   @Autowired
-  private BusinessGroupRepository businessGroupRepo;
+  private GroupRepository businessGroupRepo;
   @Autowired
-  private BusinessRoleRepository businessRoleRepo;
+  private RoleRepository businessRoleRepo;
   @Autowired
   private GroupRoleRepository groupRoleRepo;
   @Autowired

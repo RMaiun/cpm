@@ -3,6 +3,7 @@ package dev.rmaiun.cpm.repository;
 import dev.rmaiun.cpm.doman.BusinessRole;
 import dev.rmaiun.cpm.doman.RoleType;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,10 +11,14 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BusinessRoleRepository extends GenericRepository<BusinessRole> {
+public class RoleRepository extends GenericRepository<BusinessRole> {
 
-  public BusinessRoleRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+  public RoleRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
+  }
+
+  public List<BusinessRole> findRolesByAppDomain(String app, String domain) {
+    return null;
   }
 
   @Override

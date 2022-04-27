@@ -1,10 +1,8 @@
 package dev.rmaiun.cpm.repository;
 
-import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Optional;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,10 +10,14 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class BusinessGroupRepository extends GenericRepository<BusinessGroup> {
+public class GroupRepository extends GenericRepository<BusinessGroup> {
 
-  public BusinessGroupRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+  public GroupRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
+  }
+
+  public Optional<BusinessGroup> findByDomainCode(String group, String domain) {
+    return null;
   }
 
   @Override
