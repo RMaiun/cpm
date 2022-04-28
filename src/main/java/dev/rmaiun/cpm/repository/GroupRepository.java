@@ -42,7 +42,7 @@ public class GroupRepository extends GenericRepository<BusinessGroup> {
 
   public List<BusinessGroup> listAssignedGroupsForUser(String user, String app, String domain) {
     var query = """
-        select bg from user_group ug
+        select bg.id, bg.code, bg.app_id from user_group ug
         inner join business_group bg on bg.id = ug.group_id
         inner join application a on a.id = bg.app_id
         inner join group_role gr on bg.id = gr.group_id
@@ -52,6 +52,21 @@ public class GroupRepository extends GenericRepository<BusinessGroup> {
         """;
     var params = new MapSqlParameterSource("uid", user)
         .addValue("appCode", app)
+        .addValue("domainCode", domain);
+    return jdbcTemplate.query(query, params, rowMapper());
+  }
+
+  public List<BusinessGroup> listGroupAssignedToDomainWriters(String app, String domain) {
+    var query = """
+        select bg.id, bg.code, bg.app_id from group_role gr
+        inner join business_group bg on bg.id = gr.group_id
+        inner join business_role br on gr.br_id = br.id
+        inner join domain d on br.domain_id = d.id
+        inner join application a on a.id = bg.app_id
+        where a.code = :appCode and d.code = :domainCode
+        """;
+
+    var params = new MapSqlParameterSource("appCode", app)
         .addValue("domainCode", domain);
     return jdbcTemplate.query(query, params, rowMapper());
   }

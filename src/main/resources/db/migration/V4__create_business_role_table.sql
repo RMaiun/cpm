@@ -6,5 +6,5 @@ create table cpm.business_role
     role_type varchar not null,
     unique (domain_id, role_type),
     constraint business_role_pk primary key (id),
-    constraint business_role_object_fk foreign key (domain_id) references cpm.application (id)
+    constraint business_role_domain_fk foreign key (domain_id) references cpm.domain (id)
 );

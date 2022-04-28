@@ -19,7 +19,7 @@ public class RoleRepository extends GenericRepository<BusinessRole> {
 
   public List<BusinessRole> findRolesByAppDomain(String app, String domain) {
     var query = """
-        select * from business_role br
+        select br.id, br.domain_id, br.role_type from business_role br
         inner join domain d on br.domain_id = d.id
         inner join application a on a.id = d.app_id
         where a.code = :appCode and d.code = :domainCode

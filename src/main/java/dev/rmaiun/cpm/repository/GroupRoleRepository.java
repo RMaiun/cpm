@@ -1,6 +1,7 @@
 package dev.rmaiun.cpm.repository;
 
-import dev.rmaiun.cpm.doman.BusinessGroup;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import dev.rmaiun.cpm.doman.GroupRoleRelation;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
 import java.util.List;
@@ -18,13 +19,11 @@ public class GroupRoleRepository extends GenericRepository<GroupRoleRelation> {
   }
 
   public void deleteByGroupIds(List<Long> groupIds) {
-    var query = "DELETE FROM group_role WHERE group_role.group_id in (:ids)";
-    var params = new MapSqlParameterSource("ids", groupIds);
-    jdbcTemplate.update(query, params);
-  }
-
-  public List<BusinessGroup> listGroupAssignedToDomainWriters(String app, String domain) {
-    return null;
+    if (isNotEmpty(groupIds)) {
+      var query = "DELETE FROM group_role WHERE group_role.group_id in (:ids)";
+      var params = new MapSqlParameterSource("ids", groupIds);
+      jdbcTemplate.update(query, params);
+    }
   }
 
   @Override

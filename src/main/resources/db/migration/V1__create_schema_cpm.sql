@@ -1,1 +1,2 @@
-create schema if not exists cpm;
+drop schema if exists cpm cascade ;
+create schema cpm;

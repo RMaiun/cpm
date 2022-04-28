@@ -1,9 +1,14 @@
 package dev.rmaiun.cpm.repository;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+import static org.apache.commons.collections4.CollectionUtils.isNotEmpty;
+
 import dev.rmaiun.cpm.doman.Domain;
 import dev.rmaiun.cpm.doman.DomainToDomain;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.ArrayList;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -18,6 +23,9 @@ public class DomainToDomainRepository extends GenericRepository<DomainToDomain> 
   }
 
   public List<DomainToDomain> listByDomains(List<Long> ids) {
+    if (isEmpty(ids)){
+      return new ArrayList<>();
+    }
     var query = """
         select * from domain_to_domain d2d
         where d2d.domain_id in (:ids)

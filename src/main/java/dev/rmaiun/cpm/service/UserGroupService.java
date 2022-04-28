@@ -33,7 +33,7 @@ public class UserGroupService {
   }
 
   public boolean checkUserCanWriteToDomain(String app, String domain, String user) {
-    var foundGroups = groupRoleRepository.listGroupAssignedToDomainWriters(app, domain);
+    var foundGroups = groupRepository.listGroupAssignedToDomainWriters(app, domain);
     var userGroups = groupRepository.listAssignedGroupsForUser(user, app, domain);
     return userGroups.stream().anyMatch(foundGroups::contains);
   }
@@ -67,7 +67,7 @@ public class UserGroupService {
     var domainRoles = roleRepository.findRolesByAppDomain(app.code(), dto.domain());
     domainRoles.stream()
         .filter(role -> dto.roleTypes().contains(role.type()))
-        .forEach(role -> groupRoleRepository.save(new GroupRoleRelation(group.id(), role.id())));
+        .forEach(role -> groupRoleRepository.saveWithoutId(new GroupRoleRelation(group.id(), role.id())));
   }
 
   private BusinessGroup createGroup(Application app, GroupRoleDto dto) {

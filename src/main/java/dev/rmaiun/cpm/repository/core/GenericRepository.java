@@ -1,5 +1,7 @@
 package dev.rmaiun.cpm.repository.core;
 
+import static org.apache.commons.collections4.CollectionUtils.isEmpty;
+
 import dev.rmaiun.cpm.exception.DatabaseException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,13 +44,16 @@ public abstract class GenericRepository<T> {
     simpleJdbcInsert.execute(paramSource);
   }
 
-  public long batchSave(Collection<T> entity) {
+  public long batchSave(Collection<T> entities) {
+    if (isEmpty(entities)) {
+      return 0;
+    }
     if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
       throw new RuntimeException("Data Source is not defined");
     }
     var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
         .withTableName(table()).usingGeneratedKeyColumns("id");
-    var sourceList = entity.stream().map(this::parameterSource).toArray(SqlParameterSource[]::new);
+    var sourceList = entities.stream().map(this::parameterSource).toArray(SqlParameterSource[]::new);
     return Arrays.stream(simpleJdbcInsert.executeBatch(sourceList)).reduce(0, Integer::sum);
   }
 
@@ -72,6 +77,9 @@ public abstract class GenericRepository<T> {
   }
 
   public long delete(List<Long> ids) {
+    if (isEmpty(ids)) {
+      return 0;
+    }
     var query = String.format("DELETE FROM %s WHERE id in (:ids)", table());
     var params = new MapSqlParameterSource("ids", ids);
     return jdbcTemplate.update(query, params);

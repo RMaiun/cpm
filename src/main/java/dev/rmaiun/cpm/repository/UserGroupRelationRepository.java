@@ -1,9 +1,9 @@
 package dev.rmaiun.cpm.repository;
 
-import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.UserGroupRelation;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
 import java.util.List;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -18,9 +18,11 @@ public class UserGroupRelationRepository extends GenericRepository<UserGroupRela
   }
 
   public void deleteByGroupIds(List<Long> groupIds) {
-    var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
-    var params = new MapSqlParameterSource("ids", groupIds);
-    jdbcTemplate.update(query, params);
+    if (CollectionUtils.isNotEmpty(groupIds)) {
+      var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
+      var params = new MapSqlParameterSource("ids", groupIds);
+      jdbcTemplate.update(query, params);
+    }
   }
 
   @Override

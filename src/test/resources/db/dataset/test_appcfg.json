@@ -1,0 +1,33 @@
+{
+  "appCode": "MARI",
+  "domains": [
+    {
+      "code": "configuration",
+      "implicitConfiguration": {
+        "ConfigurationManagers": "RW",
+        "Auditors": "R"
+      },
+      "directConfiguration": {
+        "ApplicationConfigManagers": "RW",
+        "GatewaySubapp": "RW"
+      }
+    },
+    {
+      "code": "area",
+      "parent": "configuration",
+      "directConfiguration": {
+        "AreaManagers": "RW",
+        "AreaAuditors": "R"
+      }
+    }
+  ],
+  "relations": {
+    "AreaManagers": [
+      "13-2936-1",
+      "12-4447-1"
+    ],
+    "GatewaySubapp": [
+      "21-0428-1"
+    ]
+  }
+}

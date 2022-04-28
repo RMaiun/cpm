@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm;
+package dev.rmaiun.cpm.helper;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;

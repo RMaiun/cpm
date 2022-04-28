@@ -41,7 +41,8 @@ public class ApplicationConfigurationHelper {
       var msg = String.format("User %s has no rights to clean app data", user);
       throw new UserHasNoRightsException(msg);
     }
-
+    // clean app configurations
+    appDataCleaner.cleanAppData(app);
     // upsert missed domains which are available in configuration
     domainService.storeDomainConfigurations(app, dto.domains());
     var groupDtos = dto.domains().stream()
