@@ -40,6 +40,22 @@ public class GroupRepository extends GenericRepository<BusinessGroup> {
     return Optional.ofNullable(DataAccessUtils.singleResult(res));
   }
 
+  public List<BusinessGroup> listAssignedGroupsForUser(String user, String app, String domain) {
+    var query = """
+        select bg from user_group ug
+        inner join business_group bg on bg.id = ug.group_id
+        inner join application a on a.id = bg.app_id
+        inner join group_role gr on bg.id = gr.group_id
+        inner join business_role br on br.id = gr.br_id
+        inner join domain d on d.id = br.domain_id
+        where ug.uid = :uid and a.code = :appCode and d.code = :domainCode
+        """;
+    var params = new MapSqlParameterSource("uid", user)
+        .addValue("appCode", app)
+        .addValue("domainCode", domain);
+    return jdbcTemplate.query(query, params, rowMapper());
+  }
+
   @Override
   public SqlParameterSource parameterSource(BusinessGroup o) {
     return new MapSqlParameterSource("id", o.id())

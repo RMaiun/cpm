@@ -1,7 +1,9 @@
 package dev.rmaiun.cpm.repository;
 
+import dev.rmaiun.cpm.doman.Domain;
 import dev.rmaiun.cpm.doman.DomainToDomain;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,6 +15,15 @@ public class DomainToDomainRepository extends GenericRepository<DomainToDomain> 
 
   public DomainToDomainRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
+  }
+
+  public List<DomainToDomain> listByDomains(List<Long> ids) {
+    var query = """
+        select * from domain_to_domain d2d
+        where d2d.domain_id in (:ids)
+        """;
+    var params = new MapSqlParameterSource("ids", ids);
+    return jdbcTemplate.query(query, params, rowMapper());
   }
 
   @Override

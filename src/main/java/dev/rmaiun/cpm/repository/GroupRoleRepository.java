@@ -17,6 +17,12 @@ public class GroupRoleRepository extends GenericRepository<GroupRoleRelation> {
     super(jdbcTemplate);
   }
 
+  public void deleteByGroupIds(List<Long> groupIds) {
+    var query = "DELETE FROM group_role WHERE group_role.group_id in (:ids)";
+    var params = new MapSqlParameterSource("ids", groupIds);
+    jdbcTemplate.update(query, params);
+  }
+
   public List<BusinessGroup> listGroupAssignedToDomainWriters(String app, String domain) {
     return null;
   }

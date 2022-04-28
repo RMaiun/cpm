@@ -5,6 +5,7 @@ import dev.rmaiun.cpm.dto.ApplicationConfigurationDto;
 import dev.rmaiun.cpm.dto.EmptyDto;
 import dev.rmaiun.cpm.dto.GroupRoleDto;
 import dev.rmaiun.cpm.exception.AppNotFoundException;
+import dev.rmaiun.cpm.exception.UserHasNoRightsException;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.service.DomainService;
 import dev.rmaiun.cpm.service.UserGroupService;
@@ -20,11 +21,13 @@ public class ApplicationConfigurationHelper {
   private final ApplicationRepository applicationRepository;
   private final DomainService domainService;
   private final UserGroupService userGroupService;
+  private final AppDataCleaner appDataCleaner;
 
-  public ApplicationConfigurationHelper(ApplicationRepository applicationRepository, DomainService domainService, UserGroupService userGroupService) {
+  public ApplicationConfigurationHelper(ApplicationRepository applicationRepository, DomainService domainService, UserGroupService userGroupService, AppDataCleaner appDataCleaner) {
     this.applicationRepository = applicationRepository;
     this.domainService = domainService;
     this.userGroupService = userGroupService;
+    this.appDataCleaner = appDataCleaner;
   }
 
   @Transactional
@@ -33,7 +36,12 @@ public class ApplicationConfigurationHelper {
     var app = applicationRepository.getByCode(dto.appCode())
         .orElseThrow(() -> new AppNotFoundException(dto.appCode()));
     // check that user can create app config
-    userGroupService.checkUserCanWriteToDomain(dto.appCode(), Constants.ROOT_DOMAIN, user);
+    boolean userCanWrite = userGroupService.checkUserCanWriteToDomain(dto.appCode(), Constants.ROOT_DOMAIN, user);
+    if (!userCanWrite) {
+      var msg = String.format("User %s has no rights to clean app data", user);
+      throw new UserHasNoRightsException(msg);
+    }
+
     // upsert missed domains which are available in configuration
     domainService.storeDomainConfigurations(app, dto.domains());
     var groupDtos = dto.domains().stream()

@@ -71,6 +71,12 @@ public abstract class GenericRepository<T> {
     return jdbcTemplate.update(query, params);
   }
 
+  public long delete(List<Long> ids) {
+    var query = String.format("DELETE FROM %s WHERE id in (:ids)", table());
+    var params = new MapSqlParameterSource("ids", ids);
+    return jdbcTemplate.update(query, params);
+  }
+
   public long clearTable() {
     var query = String.format("DELETE FROM %s", table());
     return jdbcTemplate.update(query, new HashMap<>());

@@ -34,7 +34,7 @@ public class UserGroupService {
 
   public boolean checkUserCanWriteToDomain(String app, String domain, String user) {
     var foundGroups = groupRoleRepository.listGroupAssignedToDomainWriters(app, domain);
-    var userGroups = userGroupRelationRepository.findAssignedGroupsForUser(user, app, domain);
+    var userGroups = groupRepository.listAssignedGroupsForUser(user, app, domain);
     return userGroups.stream().anyMatch(foundGroups::contains);
   }
 

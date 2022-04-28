@@ -17,8 +17,10 @@ public class UserGroupRelationRepository extends GenericRepository<UserGroupRela
     super(jdbcTemplate);
   }
 
-  public List<BusinessGroup> findAssignedGroupsForUser(String user, String app, String domain) {
-    return null;
+  public void deleteByGroupIds(List<Long> groupIds) {
+    var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
+    var params = new MapSqlParameterSource("ids", groupIds);
+    jdbcTemplate.update(query, params);
   }
 
   @Override

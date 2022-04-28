@@ -18,7 +18,25 @@ public class RoleRepository extends GenericRepository<BusinessRole> {
   }
 
   public List<BusinessRole> findRolesByAppDomain(String app, String domain) {
-    return null;
+    var query = """
+        select * from business_role br
+        inner join domain d on br.domain_id = d.id
+        inner join application a on a.id = d.app_id
+        where a.code = :appCode and d.code = :domainCode
+        """;
+    var params = new MapSqlParameterSource("appCode", app)
+        .addValue("domainCode", domain);
+    return jdbcTemplate.query(query, params, rowMapper());
+  }
+
+  public List<BusinessRole> findRolesByApp(Long appId) {
+    var query = """
+        select * from business_role br
+        inner join domain d on br.domain_id = d.id
+        where d.app_id = :id
+        """;
+    var params = new MapSqlParameterSource("id", appId);
+    return jdbcTemplate.query(query, params, rowMapper());
   }
 
   @Override

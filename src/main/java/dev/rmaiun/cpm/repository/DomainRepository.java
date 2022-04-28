@@ -2,6 +2,7 @@ package dev.rmaiun.cpm.repository;
 
 import dev.rmaiun.cpm.doman.Domain;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,6 +28,17 @@ public class DomainRepository extends GenericRepository<Domain> {
         .addValue("domainCode", domainCode);
     var res = jdbcTemplate.query(query, params, rowMapper());
     return Optional.ofNullable(DataAccessUtils.singleResult(res));
+  }
+
+
+  public List<Domain> listDomainByApplication(String appCode) {
+    var query = """
+        select * from domain d
+        inner join application a on a.id = d.app_id
+        where a.code = :appCode
+        """;
+    var params = new MapSqlParameterSource("appCode", appCode);
+    return jdbcTemplate.query(query, params, rowMapper());
   }
 
   @Override
