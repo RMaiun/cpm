@@ -33,21 +33,21 @@ public class UserGroupService {
   }
 
   public boolean checkUserCanWriteToDomain(String app, String domain, String user) {
-    var foundGroups = groupRoleRepository.findGroupAssignedToDomainWriters(app, domain);
+    var foundGroups = groupRoleRepository.listGroupAssignedToDomainWriters(app, domain);
     var userGroups = userGroupRelationRepository.findAssignedGroupsForUser(user, app, domain);
     return userGroups.stream().anyMatch(foundGroups::contains);
   }
 
   public void createMissingGroups(Application app, List<GroupRoleDto> groupRoles) {
     groupRoles.forEach(dto -> {
-      var foundGroup = groupRepository.findByDomainCode(dto.group(), dto.domain())
+      var foundGroup = groupRepository.findByAppCode(dto.group(), app.code())
           .orElseGet(() -> createGroup(app, dto));
       bindGroupToDomainRoles(app, dto, foundGroup);
     });
   }
 
   public void assignUserToGroup(Application app, Map<String, List<String>> groupUsers) {
-    var appGroups = groupRepository.findByApp(app.code())
+    var appGroups = groupRepository.listByApp(app.code())
         .stream()
         .collect(Collectors.toMap(BusinessGroup::code, BusinessGroup::id));
     var absentGroups = groupUsers.keySet().stream()

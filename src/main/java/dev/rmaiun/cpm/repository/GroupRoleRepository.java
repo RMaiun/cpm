@@ -17,7 +17,7 @@ public class GroupRoleRepository extends GenericRepository<GroupRoleRelation> {
     super(jdbcTemplate);
   }
 
-  public List<BusinessGroup> findGroupAssignedToDomainWriters(String app, String domain) {
+  public List<BusinessGroup> listGroupAssignedToDomainWriters(String app, String domain) {
     return null;
   }
 
