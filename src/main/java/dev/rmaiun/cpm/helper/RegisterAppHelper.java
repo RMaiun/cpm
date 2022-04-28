@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.service;
+package dev.rmaiun.cpm.helper;
 
 import static dev.rmaiun.cpm.utils.Constants.APP_MANAGERS_GROUP;
 import static dev.rmaiun.cpm.utils.Constants.APP_OWNERS_GROUP;
@@ -16,18 +16,18 @@ import dev.rmaiun.cpm.dto.RegisterAppDtoIn;
 import dev.rmaiun.cpm.dto.RegisterAppDtoOut;
 import dev.rmaiun.cpm.exception.AppAlreadyExistsException;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
-import dev.rmaiun.cpm.repository.GroupRepository;
-import dev.rmaiun.cpm.repository.RoleRepository;
 import dev.rmaiun.cpm.repository.DomainRepository;
 import dev.rmaiun.cpm.repository.DomainToDomainRepository;
+import dev.rmaiun.cpm.repository.GroupRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
+import dev.rmaiun.cpm.repository.RoleRepository;
 import dev.rmaiun.cpm.repository.UserGroupRelationRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RegisterAppService {
+public class RegisterAppHelper {
 
   private final ApplicationRepository appRepo;
   private final GroupRepository businessGroupRepo;
@@ -37,7 +37,7 @@ public class RegisterAppService {
   private final UserGroupRelationRepository userGroupRelationRepo;
   private final DomainToDomainRepository domainToDomainRepo;
 
-  public RegisterAppService(ApplicationRepository appRepo, GroupRepository businessGroupRepo, RoleRepository businessRoleRepo, DomainRepository domainRepo,
+  public RegisterAppHelper(ApplicationRepository appRepo, GroupRepository businessGroupRepo, RoleRepository businessRoleRepo, DomainRepository domainRepo,
       GroupRoleRepository groupRoleRepo, UserGroupRelationRepository userGroupRelationRepo, DomainToDomainRepository groupToGroupRelationRepo, DomainToDomainRepository domainToDomainRepo) {
     this.appRepo = appRepo;
     this.businessGroupRepo = businessGroupRepo;

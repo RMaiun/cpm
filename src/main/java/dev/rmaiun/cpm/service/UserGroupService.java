@@ -32,6 +32,12 @@ public class UserGroupService {
     this.roleRepository = roleRepository;
   }
 
+  public boolean checkUserCanWriteToDomain(String app, String domain, String user) {
+    var foundGroups = groupRoleRepository.findGroupAssignedToDomainWriters(app, domain);
+    var userGroups = userGroupRelationRepository.findAssignedGroupsForUser(user, app, domain);
+    return userGroups.stream().anyMatch(foundGroups::contains);
+  }
+
   public void createMissingGroups(Application app, List<GroupRoleDto> groupRoles) {
     groupRoles.forEach(dto -> {
       var foundGroup = groupRepository.findByDomainCode(dto.group(), dto.domain())

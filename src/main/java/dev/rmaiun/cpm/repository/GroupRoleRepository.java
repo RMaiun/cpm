@@ -1,7 +1,9 @@
 package dev.rmaiun.cpm.repository;
 
+import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.GroupRoleRelation;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
+import java.util.List;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,6 +15,10 @@ public class GroupRoleRepository extends GenericRepository<GroupRoleRelation> {
 
   public GroupRoleRepository(NamedParameterJdbcTemplate jdbcTemplate) {
     super(jdbcTemplate);
+  }
+
+  public List<BusinessGroup> findGroupAssignedToDomainWriters(String app, String domain) {
+    return null;
   }
 
   @Override

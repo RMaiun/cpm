@@ -16,7 +16,7 @@ import dev.rmaiun.cpm.repository.DomainRepository;
 import dev.rmaiun.cpm.repository.DomainToDomainRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
 import dev.rmaiun.cpm.repository.UserGroupRelationRepository;
-import dev.rmaiun.cpm.service.RegisterAppService;
+import dev.rmaiun.cpm.helper.RegisterAppHelper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -41,7 +41,7 @@ import org.springframework.test.context.junit4.SpringRunner;
     "/db/migration/V7__create_user_group_table.sql",
     "/db/migration/V8__create_domain_to_domain_table.sql"
 }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class RegisterAppServiceTest extends TestContainersSetup {
+public class RegisterAppHelperTest extends TestContainersSetup {
 
   @Autowired
   private ApplicationRepository applicationRepository;
@@ -56,7 +56,7 @@ public class RegisterAppServiceTest extends TestContainersSetup {
   @Autowired
   private UserGroupRelationRepository userGroupRelationRepo;
   @Autowired
-  private RegisterAppService registerAppService;
+  private RegisterAppHelper registerAppHelper;
   @Autowired
   private DomainToDomainRepository domainToDomainRepo;
   @Autowired
@@ -74,7 +74,7 @@ public class RegisterAppServiceTest extends TestContainersSetup {
     var app = new Application(1L, "testApp");
     applicationRepository.save(app);
     var dto = new RegisterAppDtoIn(app.code(), "someUser");
-    BusinessException err = assertThrows(BusinessException.class, () -> registerAppService.registerApp(dto));
+    BusinessException err = assertThrows(BusinessException.class, () -> registerAppHelper.registerApp(dto));
     assertEquals(AppAlreadyExistsException.CODE, err.getCode());
   }
 
@@ -82,7 +82,7 @@ public class RegisterAppServiceTest extends TestContainersSetup {
   @DisplayName("New Application is successfully registered")
   public void appAlreadyPresent() {
     var dto = new RegisterAppDtoIn("testApp", "someUser");
-    var res = registerAppService.registerApp(dto);
+    var res = registerAppHelper.registerApp(dto);
     assertNotNull(res);
     assertEquals(dto.app(), res.code());
     var storedDomains = domainRepository.listAll();
