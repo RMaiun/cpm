@@ -36,7 +36,7 @@ import org.springframework.util.StreamUtils;
     "/db/migration/V7__create_user_group_table.sql",
     "/db/migration/V8__create_domain_to_domain_table.sql"
 }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class ApplicationConfigurationHelperTest /*extends TestContainersSetup*/ {
+public class ApplicationConfigurationHelperTest extends TestContainersSetup {
 
   @Autowired
   private RegisterAppHelper registerAppHelper;

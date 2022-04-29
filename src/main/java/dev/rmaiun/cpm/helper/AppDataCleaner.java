@@ -50,14 +50,14 @@ public class AppDataCleaner {
         .map(BusinessGroup::id)
         .toList();
     var roles = roleRepository.findRolesByApp(app.id()).stream()
+        .filter(br -> domains.contains(br.domainId()))
         .map(BusinessRole::id)
         .toList();
-    // todo fix FK relation between role and group_role
     groupRoleRepository.deleteByGroupIds(groups);
     userGroupRelationRepository.deleteByGroupIds(groups);
-    domain2domainRepository.delete(domainToDomains);
     groupRepository.delete(groups);
     roleRepository.delete(roles);
+    domain2domainRepository.delete(domainToDomains);
     domainRepository.delete(domains);
   }
 }
