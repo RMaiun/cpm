@@ -1,20 +1,25 @@
-package dev.rmaiun.cpm.service;
+package dev.rmaiun.cpm.model;
 
+import static dev.rmaiun.cpm.doman.RoleType.Writer;
 import static java.util.Objects.isNull;
 
 import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.doman.GroupRoleRelation;
 import dev.rmaiun.cpm.doman.UserGroupRelation;
+import dev.rmaiun.cpm.dto.DomainAuthorizationType;
 import dev.rmaiun.cpm.dto.GroupRoleDto;
 import dev.rmaiun.cpm.exception.GroupNotFoundException;
 import dev.rmaiun.cpm.repository.GroupRepository;
 import dev.rmaiun.cpm.repository.GroupRoleRepository;
 import dev.rmaiun.cpm.repository.RoleRepository;
 import dev.rmaiun.cpm.repository.UserGroupRelationRepository;
+import dev.rmaiun.cpm.utils.RoleTypeMapper;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -33,9 +38,8 @@ public class UserGroupService {
   }
 
   public boolean checkUserCanWriteToDomain(String app, String domain, String user) {
-    var foundGroups = groupRepository.listGroupAssignedToDomainWriters(app, domain);
-    var userGroups = groupRepository.listAssignedGroupsForUser(user, app, domain);
-    return userGroups.stream().anyMatch(foundGroups::contains);
+    var foundGroups = groupRepository.listGroupAssignedToDomainByRole(app, domain, Set.of(Writer));
+    return CollectionUtils.isNotEmpty(foundGroups);
   }
 
   public void createMissingGroups(Application app, List<GroupRoleDto> groupRoles) {
@@ -61,6 +65,16 @@ public class UserGroupService {
             .map(user -> new UserGroupRelation(user, appGroups.get(e.getKey()))))
         .collect(Collectors.toSet());
     userGroupRelationRepository.batchSave(userGroupRelations);
+  }
+
+  public List<BusinessGroup> findGroupsForUserByDomain(String app, String domain, DomainAuthorizationType type, String user) {
+    var roleTypes = RoleTypeMapper.authRoleToDomainTypes(type);
+    return groupRepository.listGroupAssignedToDomainByUserRole(app, domain, roleTypes, user);
+  }
+
+  public boolean checkUserAssignedToGroup(String user, String app, String group) {
+    var foundGroups = groupRepository.listAssignedGroupsForUserByApp(user, app);
+    return foundGroups.stream().anyMatch(g -> g.code().equals(group));
   }
 
   private void bindGroupToDomainRoles(Application app, GroupRoleDto dto, BusinessGroup group) {

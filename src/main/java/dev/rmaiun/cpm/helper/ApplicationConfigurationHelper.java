@@ -1,17 +1,15 @@
 package dev.rmaiun.cpm.helper;
 
-import dev.rmaiun.cpm.doman.RoleType;
 import dev.rmaiun.cpm.dto.ApplicationConfigurationDto;
 import dev.rmaiun.cpm.dto.EmptyDto;
 import dev.rmaiun.cpm.dto.GroupRoleDto;
 import dev.rmaiun.cpm.exception.AppNotFoundException;
 import dev.rmaiun.cpm.exception.UserHasNoRightsException;
+import dev.rmaiun.cpm.model.DomainService;
+import dev.rmaiun.cpm.model.UserGroupService;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
-import dev.rmaiun.cpm.service.DomainService;
-import dev.rmaiun.cpm.service.UserGroupService;
 import dev.rmaiun.cpm.utils.Constants;
-import java.util.Collections;
-import java.util.Set;
+import dev.rmaiun.cpm.utils.RoleTypeMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,19 +45,10 @@ public class ApplicationConfigurationHelper {
     domainService.storeDomainConfigurations(app, dto.domains());
     var groupDtos = dto.domains().stream()
         .flatMap(domCfg -> domCfg.directConfiguration().entrySet().stream()
-            .map(e -> new GroupRoleDto(e.getKey(), domCfg.code(), roleType(e.getValue()))))
+            .map(e -> new GroupRoleDto(e.getKey(), domCfg.code(), RoleTypeMapper.authRoleToDomainTypes(e.getValue()))))
         .toList();
     userGroupService.createMissingGroups(app, groupDtos);
     userGroupService.assignUserToGroup(app, dto.relations());
     return new EmptyDto();
-  }
-
-  private Set<RoleType> roleType(String str) {
-    return switch (str) {
-      case "R" -> Set.of(RoleType.Reader);
-      case "W" -> Set.of(RoleType.Writer);
-      case "RW" -> Set.of(RoleType.Reader, RoleType.Writer);
-      default -> Collections.emptySet();
-    };
   }
 }

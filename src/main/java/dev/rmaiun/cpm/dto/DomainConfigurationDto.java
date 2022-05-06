@@ -7,7 +7,7 @@ import java.util.Map;
 public record DomainConfigurationDto(String code,
                                      String parent,
                                      Map<String, String> implicitConfiguration,
-                                     Map<String, String> directConfiguration) {
+                                     Map<String, DomainAuthorizationType> directConfiguration) {
 
   public static final Validator<DomainConfigurationDto> validator = ValidatorBuilder.<DomainConfigurationDto>of()
       .constraint(DomainConfigurationDto::code, "code", c -> c.notNull().notBlank())

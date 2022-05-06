@@ -1,9 +1,11 @@
 package dev.rmaiun.cpm.repository;
 
 import dev.rmaiun.cpm.doman.BusinessGroup;
+import dev.rmaiun.cpm.doman.RoleType;
 import dev.rmaiun.cpm.repository.core.GenericRepository;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -40,23 +42,21 @@ public class GroupRepository extends GenericRepository<BusinessGroup> {
     return Optional.ofNullable(DataAccessUtils.singleResult(res));
   }
 
-  public List<BusinessGroup> listAssignedGroupsForUser(String user, String app, String domain) {
+  public List<BusinessGroup> listAssignedGroupsForUserByApp(String user, String app) {
     var query = """
         select bg.id, bg.code, bg.app_id from user_group ug
         inner join business_group bg on bg.id = ug.group_id
         inner join application a on a.id = bg.app_id
         inner join group_role gr on bg.id = gr.group_id
         inner join business_role br on br.id = gr.br_id
-        inner join domain d on d.id = br.domain_id
-        where ug.uid = :uid and a.code = :appCode and d.code = :domainCode
+        where ug.uid = :uid and a.code = :appCode
         """;
     var params = new MapSqlParameterSource("uid", user)
-        .addValue("appCode", app)
-        .addValue("domainCode", domain);
+        .addValue("appCode", app);
     return jdbcTemplate.query(query, params, rowMapper());
   }
 
-  public List<BusinessGroup> listGroupAssignedToDomainWriters(String app, String domain) {
+  public List<BusinessGroup> listGroupAssignedToDomainByRole(String app, String domain, Set<RoleType> roleTypes) {
     var query = """
         select bg.id, bg.code, bg.app_id from group_role gr
         inner join business_group bg on bg.id = gr.group_id
@@ -64,10 +64,31 @@ public class GroupRepository extends GenericRepository<BusinessGroup> {
         inner join domain d on br.domain_id = d.id
         inner join application a on a.id = bg.app_id
         where a.code = :appCode and d.code = :domainCode
+        and br.role_type in :roleTypes
         """;
-
     var params = new MapSqlParameterSource("appCode", app)
-        .addValue("domainCode", domain);
+        .addValue("domainCode", domain)
+        .addValue("roleTypes", roleTypes);
+    return jdbcTemplate.query(query, params, rowMapper());
+  }
+
+  public List<BusinessGroup> listGroupAssignedToDomainByUserRole(String app, String domain, Set<RoleType> roleTypes, String user) {
+    var query = """
+        select bg.id, bg.code, bg.app_id from group_role gr
+        inner join business_group bg on bg.id = gr.group_id
+        inner join business_role br on gr.br_id = br.id
+        inner join domain d on br.domain_id = d.id
+        inner join application a on a.id = bg.app_id
+        inner join user_group ug on bg.id = ug.group_id
+        where a.code = :appCode
+         and d.code = :domainCode
+        and ug.uid = :user
+        and br.role_type in :roleTypes
+        """;
+    var params = new MapSqlParameterSource("appCode", app)
+        .addValue("domainCode", domain)
+        .addValue("user", user)
+        .addValue("roleTypes", roleTypes);
     return jdbcTemplate.query(query, params, rowMapper());
   }
 
