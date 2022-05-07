@@ -23,68 +23,68 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Sql(scripts = {
-    "/db/migration/V1__create_schema_cpm.sql",
-    "/db/migration/V2__create_app_table.sql"
-}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(
+        scripts = {"/db/scripts/V1__create_schema_cpm.sql", "/db/migration/V1__create_app_table.sql"},
+        executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ApplicationRepositoryTest extends TestContainersSetup {
 
-  @Autowired
-  private ApplicationRepository applicationRepository;
-  @Autowired
-  private NamedParameterJdbcTemplate jdbcTemplate;
+    @Autowired
+    private ApplicationRepository applicationRepository;
 
-  @Before
-  @After
-  public void cleanWorkspace() {
-    applicationRepository.clearTable();
-  }
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
-  @Test
-  @DisplayName("Application is successfully created")
-  public void storeAppSuccessfully() {
-    var app = new Application(null, "testApp");
-    long id = applicationRepository.save(app);
-    assertTrue(id > 0);
-    Optional<Application> found = applicationRepository.getById(id);
-    assertTrue(found.isPresent());
-    assertEquals(app.code(), found.get().code());
-  }
+    @Before
+    @After
+    public void cleanWorkspace() {
+        applicationRepository.clearTable();
+    }
 
-  @Test
-  @DisplayName("Application is not found")
-  public void appNotFound() {
-    var app = new Application(null, "testApp");
-    applicationRepository.save(app);
-    Optional<Application> found = applicationRepository.getById(34L);
-    assertTrue(found.isEmpty());
-  }
+    @Test
+    @DisplayName("Application is successfully created")
+    public void storeAppSuccessfully() {
+        var app = new Application(null, "testApp");
+        long id = applicationRepository.save(app);
+        assertTrue(id > 0);
+        Optional<Application> found = applicationRepository.getById(id);
+        assertTrue(found.isPresent());
+        assertEquals(app.code(), found.get().code());
+    }
 
-  @Test
-  @DisplayName("Application is successfully deleted")
-  public void deleteExisted() {
-    var app = new Application(null, "testApp");
-    long id = applicationRepository.save(app);
-    Optional<Application> found = applicationRepository.getById(id);
-    assertTrue(found.isPresent());
-    var deletedElements = applicationRepository.delete(id);
-    assertEquals(1, deletedElements);
-    var all = applicationRepository.listAll();
-    assertTrue(Objects.nonNull(all));
-    assertTrue(all.isEmpty());
-  }
+    @Test
+    @DisplayName("Application is not found")
+    public void appNotFound() {
+        var app = new Application(null, "testApp");
+        applicationRepository.save(app);
+        Optional<Application> found = applicationRepository.getById(34L);
+        assertTrue(found.isEmpty());
+    }
 
-  @Test
-  @DisplayName("Application is not deleted")
-  public void skipDeleteExisted() {
-    var app = new Application(null, "testApp");
-    long id = applicationRepository.save(app);
-    Optional<Application> found = applicationRepository.getById(id);
-    assertTrue(found.isPresent());
-    var deletedElements = applicationRepository.delete(34L);
-    assertEquals(0, deletedElements);
-    var all = applicationRepository.listAll();
-    assertTrue(Objects.nonNull(all));
-    assertThat(all, hasSize(1));
-  }
+    @Test
+    @DisplayName("Application is successfully deleted")
+    public void deleteExisted() {
+        var app = new Application(null, "testApp");
+        long id = applicationRepository.save(app);
+        Optional<Application> found = applicationRepository.getById(id);
+        assertTrue(found.isPresent());
+        var deletedElements = applicationRepository.delete(id);
+        assertEquals(1, deletedElements);
+        var all = applicationRepository.listAll();
+        assertTrue(Objects.nonNull(all));
+        assertTrue(all.isEmpty());
+    }
+
+    @Test
+    @DisplayName("Application is not deleted")
+    public void skipDeleteExisted() {
+        var app = new Application(null, "testApp");
+        long id = applicationRepository.save(app);
+        Optional<Application> found = applicationRepository.getById(id);
+        assertTrue(found.isPresent());
+        var deletedElements = applicationRepository.delete(34L);
+        assertEquals(0, deletedElements);
+        var all = applicationRepository.listAll();
+        assertTrue(Objects.nonNull(all));
+        assertThat(all, hasSize(1));
+    }
 }

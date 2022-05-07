@@ -18,82 +18,86 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 
 public abstract class GenericRepository<T> {
 
-  protected final NamedParameterJdbcTemplate jdbcTemplate;
+    protected final NamedParameterJdbcTemplate jdbcTemplate;
 
-  public GenericRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-    this.jdbcTemplate = jdbcTemplate;
-  }
-
-  public long save(T entity) {
-    if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
-      throw new RuntimeException("Data Source is not defined");
+    public GenericRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
     }
-    var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
-        .withTableName(table()).usingGeneratedKeyColumns("id");
-    return simpleJdbcInsert.executeAndReturnKey(parameterSource(entity)).longValue();
-  }
 
-  public void saveWithoutId(T entity) {
-    if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
-      throw new DatabaseException("Data Source is not defined");
+    public long save(T entity) {
+        if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
+            throw new RuntimeException("Data Source is not defined");
+        }
+        var simpleJdbcInsert = new SimpleJdbcInsert(
+                        jdbcTemplate.getJdbcTemplate().getDataSource())
+                .withTableName(table())
+                .usingGeneratedKeyColumns("id");
+        return simpleJdbcInsert.executeAndReturnKey(parameterSource(entity)).longValue();
     }
-    var paramSource = parameterSource(entity);
-    var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
-        .usingColumns(Objects.requireNonNull(paramSource.getParameterNames()))
-        .withTableName(table());
-    simpleJdbcInsert.execute(paramSource);
-  }
 
-  public long batchSave(Collection<T> entities) {
-    if (isEmpty(entities)) {
-      return 0;
+    public void saveWithoutId(T entity) {
+        if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
+            throw new DatabaseException("Data Source is not defined");
+        }
+        var paramSource = parameterSource(entity);
+        var simpleJdbcInsert = new SimpleJdbcInsert(
+                        jdbcTemplate.getJdbcTemplate().getDataSource())
+                .usingColumns(Objects.requireNonNull(paramSource.getParameterNames()))
+                .withTableName(table());
+        simpleJdbcInsert.execute(paramSource);
     }
-    if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
-      throw new RuntimeException("Data Source is not defined");
+
+    public long batchSave(Collection<T> entities) {
+        if (isEmpty(entities)) {
+            return 0;
+        }
+        if (jdbcTemplate.getJdbcTemplate().getDataSource() == null) {
+            throw new RuntimeException("Data Source is not defined");
+        }
+        var simpleJdbcInsert = new SimpleJdbcInsert(
+                        jdbcTemplate.getJdbcTemplate().getDataSource())
+                .withTableName(table())
+                .usingGeneratedKeyColumns("id");
+        var sourceList = entities.stream().map(this::parameterSource).toArray(SqlParameterSource[]::new);
+        return Arrays.stream(simpleJdbcInsert.executeBatch(sourceList)).reduce(0, Integer::sum);
     }
-    var simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate().getDataSource())
-        .withTableName(table()).usingGeneratedKeyColumns("id");
-    var sourceList = entities.stream().map(this::parameterSource).toArray(SqlParameterSource[]::new);
-    return Arrays.stream(simpleJdbcInsert.executeBatch(sourceList)).reduce(0, Integer::sum);
-  }
 
-  public Optional<T> getById(Long id) {
-    var query = String.format("SELECT * from %s t where t.id = :id", table());
-    var params = new MapSqlParameterSource("id", id);
-    List<T> res = jdbcTemplate.query(query, params, rowMapper());
-    return Optional.ofNullable(DataAccessUtils.singleResult(res));
-  }
-
-  public List<T> listAll() {
-    var query = String.format("SELECT * from %s t", table());
-    var params = new MapSqlParameterSource();
-    return jdbcTemplate.query(query, params, rowMapper());
-  }
-
-  public long delete(Long id) {
-    var query = String.format("DELETE FROM %s WHERE id = :id", table());
-    var params = new MapSqlParameterSource("id", id);
-    return jdbcTemplate.update(query, params);
-  }
-
-  public long delete(List<Long> ids) {
-    if (isEmpty(ids)) {
-      return 0;
+    public Optional<T> getById(Long id) {
+        var query = String.format("SELECT * from %s t where t.id = :id", table());
+        var params = new MapSqlParameterSource("id", id);
+        List<T> res = jdbcTemplate.query(query, params, rowMapper());
+        return Optional.ofNullable(DataAccessUtils.singleResult(res));
     }
-    var query = String.format("DELETE FROM %s WHERE id in (:ids)", table());
-    var params = new MapSqlParameterSource("ids", ids);
-    return jdbcTemplate.update(query, params);
-  }
 
-  public long clearTable() {
-    var query = String.format("DELETE FROM %s", table());
-    return jdbcTemplate.update(query, new HashMap<>());
-  }
+    public List<T> listAll() {
+        var query = String.format("SELECT * from %s t", table());
+        var params = new MapSqlParameterSource();
+        return jdbcTemplate.query(query, params, rowMapper());
+    }
 
-  protected abstract SqlParameterSource parameterSource(T o);
+    public long delete(Long id) {
+        var query = String.format("DELETE FROM %s WHERE id = :id", table());
+        var params = new MapSqlParameterSource("id", id);
+        return jdbcTemplate.update(query, params);
+    }
 
-  protected abstract RowMapper<T> rowMapper();
+    public long delete(List<Long> ids) {
+        if (isEmpty(ids)) {
+            return 0;
+        }
+        var query = String.format("DELETE FROM %s WHERE id in (:ids)", table());
+        var params = new MapSqlParameterSource("ids", ids);
+        return jdbcTemplate.update(query, params);
+    }
 
-  protected abstract String table();
+    public long clearTable() {
+        var query = String.format("DELETE FROM %s", table());
+        return jdbcTemplate.update(query, new HashMap<>());
+    }
 
+    protected abstract SqlParameterSource parameterSource(T o);
+
+    protected abstract RowMapper<T> rowMapper();
+
+    protected abstract String table();
 }

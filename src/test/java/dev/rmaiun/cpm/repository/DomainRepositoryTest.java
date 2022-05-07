@@ -1,7 +1,6 @@
 package dev.rmaiun.cpm.repository;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -24,51 +23,54 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Sql(scripts = {
-    "/db/migration/V1__create_schema_cpm.sql",
-    "/db/migration/V2__create_app_table.sql",
-    "/db/migration/V3__create_domain_table.sql"
-}, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(
+        scripts = {
+            "/db/scripts/V1__create_schema_cpm.sql",
+            "/db/migration/V1__create_app_table.sql",
+            "/db/migration/V2__create_domain_table.sql"
+        },
+        executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class DomainRepositoryTest extends TestContainersSetup {
 
-  @Autowired
-  private ApplicationRepository appRepo;
-  @Autowired
-  private DomainRepository domainRepo;
+    @Autowired
+    private ApplicationRepository appRepo;
 
-  @BeforeEach
-  @AfterEach
-  public void setup() {
-    domainRepo.clearTable();
-    appRepo.clearTable();
-  }
+    @Autowired
+    private DomainRepository domainRepo;
 
-  @Test
-  @DisplayName("Impossible to store domain without app")
-  public void errorDomainWithoutApp() {
-    var domain = new Domain(1L, "test", 3L);
-    try {
-      domainRepo.save(domain);
-      fail();
-    } catch (Exception e) {
-      assertTrue(e instanceof DataIntegrityViolationException);
+    @BeforeEach
+    @AfterEach
+    public void setup() {
+        domainRepo.clearTable();
+        appRepo.clearTable();
     }
-  }
 
-  @Test
-  @DisplayName("CRUD Domain behavior is correct")
-  public void domainSuccessfulSave() {
-    var app = new Application(1L, "test");
-    var appId = appRepo.save(app);
-    var domain = new Domain(1L, "testDomain", appId);
-    var domId = domainRepo.save(domain);
-    var foundDomain = domainRepo.getById(domId);
-    assertTrue(foundDomain.isPresent());
-    var foundDom = foundDomain.get();
-    assertEquals(domain.code(), foundDom.code());
-    var foundList = domainRepo.listAll();
-    assertThat(foundList, hasSize(1));
-    var removedNumbers = domainRepo.delete(foundDom.id());
-    assertThat(removedNumbers, equalTo(1));
-  }
+    @Test
+    @DisplayName("Impossible to store domain without app")
+    public void errorDomainWithoutApp() {
+        var domain = new Domain(1L, "test", 3L);
+        try {
+            domainRepo.save(domain);
+            fail();
+        } catch (Exception e) {
+            assertTrue(e instanceof DataIntegrityViolationException);
+        }
+    }
+
+    @Test
+    @DisplayName("CRUD Domain behavior is correct")
+    public void domainSuccessfulSave() {
+        var app = new Application(1L, "test");
+        var appId = appRepo.save(app);
+        var domain = new Domain(1L, "testDomain", appId);
+        var domId = domainRepo.save(domain);
+        var foundDomain = domainRepo.getById(domId);
+        assertTrue(foundDomain.isPresent());
+        var foundDom = foundDomain.get();
+        assertEquals(domain.code(), foundDom.code());
+        var foundList = domainRepo.listAll();
+        assertThat(foundList, hasSize(1));
+        var removedNumbers = domainRepo.delete(foundDom.id());
+        assertEquals(1L, removedNumbers);
+    }
 }

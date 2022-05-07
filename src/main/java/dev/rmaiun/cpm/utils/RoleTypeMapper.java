@@ -6,14 +6,13 @@ import java.util.Set;
 
 public class RoleTypeMapper {
 
-  private RoleTypeMapper() {
-  }
+    private RoleTypeMapper() {}
 
-  public static Set<RoleType> authRoleToDomainTypes(DomainAuthorizationType authType) {
-    return switch (authType) {
-      case R -> Set.of(RoleType.Reader);
-      case W -> Set.of(RoleType.Writer);
-      case RW -> Set.of(RoleType.Reader, RoleType.Writer);
-    };
-  }
+    public static Set<RoleType> authRoleToDomainTypes(DomainAuthorizationType authType) {
+        return switch (authType) {
+            case R -> Set.of(RoleType.READER);
+            case W -> Set.of(RoleType.WRITER);
+            case RW -> Set.of(RoleType.READER, RoleType.WRITER);
+        };
+    }
 }

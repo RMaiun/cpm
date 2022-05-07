@@ -17,37 +17,37 @@ import org.springframework.stereotype.Service;
 @Service
 public class DomainService {
 
-  private final DomainRepository domainRepository;
-  private final RoleRepository roleRepository;
-  private final DomainToDomainRepository d2dRepository;
+    private final DomainRepository domainRepository;
+    private final RoleRepository roleRepository;
+    private final DomainToDomainRepository d2dRepository;
 
-  public DomainService(DomainRepository domainRepository, RoleRepository roleRepository, DomainToDomainRepository d2dRepository) {
-    this.domainRepository = domainRepository;
-    this.roleRepository = roleRepository;
-    this.d2dRepository = d2dRepository;
-  }
+    public DomainService(
+            DomainRepository domainRepository, RoleRepository roleRepository, DomainToDomainRepository d2dRepository) {
+        this.domainRepository = domainRepository;
+        this.roleRepository = roleRepository;
+        this.d2dRepository = d2dRepository;
+    }
 
-  public void storeDomainConfigurations(Application app, List<DomainConfigurationDto> configurations) {
-    configurations.forEach(cfg -> storeConfiguration(app, cfg));
-  }
+    public void storeDomainConfigurations(Application app, List<DomainConfigurationDto> configurations) {
+        configurations.forEach(cfg -> storeConfiguration(app, cfg));
+    }
 
-  public void storeConfiguration(Application app, DomainConfigurationDto dto) {
-    Long parentId = ofNullable(dto.parent())
-        .map(p -> prepareDomain(p, app))
-        .orElse(null);
-    Long domId = prepareDomain(dto.code(), app);
-    var d2d = new DomainToDomain(0L, domId, parentId);
-    d2dRepository.save(d2d);
-  }
+    public void storeConfiguration(Application app, DomainConfigurationDto dto) {
+        Long parentId = ofNullable(dto.parent()).map(p -> prepareDomain(p, app)).orElse(null);
+        Long domId = prepareDomain(dto.code(), app);
+        var d2d = new DomainToDomain(0L, domId, parentId);
+        d2dRepository.save(d2d);
+    }
 
-  private Long prepareDomain(String domain, Application app) {
-    return domainRepository.findDomainByApplication(domain, app.code())
-        .map(Domain::id)
-        .orElseGet(() -> {
-          var id = domainRepository.save(new Domain(0L, domain, app.id()));
-          roleRepository.save(new BusinessRole(0L, id, RoleType.Reader));
-          roleRepository.save(new BusinessRole(0L, id, RoleType.Writer));
-          return id;
-        });
-  }
+    private Long prepareDomain(String domain, Application app) {
+        return domainRepository
+                .findDomainByApplication(domain, app.code())
+                .map(Domain::id)
+                .orElseGet(() -> {
+                    var id = domainRepository.save(new Domain(0L, domain, app.id()));
+                    roleRepository.save(new BusinessRole(0L, id, RoleType.READER));
+                    roleRepository.save(new BusinessRole(0L, id, RoleType.WRITER));
+                    return id;
+                });
+    }
 }

@@ -13,35 +13,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserGroupRelationRepository extends GenericRepository<UserGroupRelation> {
 
-  public UserGroupRelationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-    super(jdbcTemplate);
-  }
-
-  public void deleteByGroupIds(List<Long> groupIds) {
-    if (CollectionUtils.isNotEmpty(groupIds)) {
-      var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
-      var params = new MapSqlParameterSource("ids", groupIds);
-      jdbcTemplate.update(query, params);
+    public UserGroupRelationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
-  }
 
-  @Override
-  public SqlParameterSource parameterSource(UserGroupRelation o) {
-    return new MapSqlParameterSource("uid", o.uid())
-        .addValue("group_id", o.groupId());
-  }
+    public void deleteByGroupIds(List<Long> groupIds) {
+        if (CollectionUtils.isNotEmpty(groupIds)) {
+            var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
+            var params = new MapSqlParameterSource("ids", groupIds);
+            jdbcTemplate.update(query, params);
+        }
+    }
 
-  @Override
-  public RowMapper<UserGroupRelation> rowMapper() {
-    return (rs, rowNum) -> {
-      var uid = rs.getString("uid");
-      var gid = rs.getLong("group_id");
-      return new UserGroupRelation(uid, gid);
-    };
-  }
+    @Override
+    public SqlParameterSource parameterSource(UserGroupRelation o) {
+        return new MapSqlParameterSource("uid", o.uid()).addValue("group_id", o.groupId());
+    }
 
-  @Override
-  protected String table() {
-    return "user_group";
-  }
+    @Override
+    public RowMapper<UserGroupRelation> rowMapper() {
+        return (rs, rowNum) -> {
+            var uid = rs.getString("uid");
+            var gid = rs.getLong("group_id");
+            return new UserGroupRelation(uid, gid);
+        };
+    }
+
+    @Override
+    protected String table() {
+        return "user_group";
+    }
 }

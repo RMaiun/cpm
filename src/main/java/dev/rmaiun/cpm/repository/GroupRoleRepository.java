@@ -14,35 +14,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class GroupRoleRepository extends GenericRepository<GroupRoleRelation> {
 
-  public GroupRoleRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-    super(jdbcTemplate);
-  }
-
-  public void deleteByGroupIds(List<Long> groupIds) {
-    if (isNotEmpty(groupIds)) {
-      var query = "DELETE FROM group_role WHERE group_role.group_id in (:ids)";
-      var params = new MapSqlParameterSource("ids", groupIds);
-      jdbcTemplate.update(query, params);
+    public GroupRoleRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+        super(jdbcTemplate);
     }
-  }
 
-  @Override
-  public SqlParameterSource parameterSource(GroupRoleRelation o) {
-    return new MapSqlParameterSource("group_id", o.groupId())
-        .addValue("br_id", o.roleId());
-  }
+    public void deleteByGroupIds(List<Long> groupIds) {
+        if (isNotEmpty(groupIds)) {
+            var query = "DELETE FROM group_role WHERE group_role.group_id in (:ids)";
+            var params = new MapSqlParameterSource("ids", groupIds);
+            jdbcTemplate.update(query, params);
+        }
+    }
 
-  @Override
-  public RowMapper<GroupRoleRelation> rowMapper() {
-    return (rs, rowNum) -> {
-      var gid = rs.getLong("group_id");
-      var rid = rs.getLong("br_id");
-      return new GroupRoleRelation(gid, rid);
-    };
-  }
+    @Override
+    public SqlParameterSource parameterSource(GroupRoleRelation o) {
+        return new MapSqlParameterSource("group_id", o.groupId()).addValue("br_id", o.roleId());
+    }
 
-  @Override
-  protected String table() {
-    return "group_role";
-  }
+    @Override
+    public RowMapper<GroupRoleRelation> rowMapper() {
+        return (rs, rowNum) -> {
+            var gid = rs.getLong("group_id");
+            var rid = rs.getLong("br_id");
+            return new GroupRoleRelation(gid, rid);
+        };
+    }
+
+    @Override
+    protected String table() {
+        return "group_role";
+    }
 }

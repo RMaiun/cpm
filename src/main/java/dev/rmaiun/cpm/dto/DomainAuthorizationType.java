@@ -1,5 +1,7 @@
 package dev.rmaiun.cpm.dto;
 
 public enum DomainAuthorizationType {
-  R, W, RW
+    R,
+    W,
+    RW
 }
