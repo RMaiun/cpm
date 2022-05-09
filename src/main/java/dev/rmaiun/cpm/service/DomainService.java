@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.model;
+package dev.rmaiun.cpm.service;
 
 import static java.util.Optional.ofNullable;
 

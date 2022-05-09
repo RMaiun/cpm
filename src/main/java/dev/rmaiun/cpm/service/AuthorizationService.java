@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.model;
+package dev.rmaiun.cpm.service;
 
 import dev.rmaiun.cpm.doman.BusinessGroup;
 import dev.rmaiun.cpm.dto.AuthorizationResultDto;

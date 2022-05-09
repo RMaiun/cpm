@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.helper;
+package dev.rmaiun.cpm.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -42,7 +42,7 @@ import org.springframework.test.context.junit4.SpringRunner;
             "/db/migration/V7__create_domain_to_domain_table.sql"
         },
         executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class RegisterAppHelperTest extends TestContainersSetup {
+public class RegisterAppServiceTest extends TestContainersSetup {
 
     @Autowired
     private ApplicationRepository applicationRepository;
@@ -63,7 +63,7 @@ public class RegisterAppHelperTest extends TestContainersSetup {
     private UserGroupRelationRepository userGroupRelationRepo;
 
     @Autowired
-    private RegisterAppHelper registerAppHelper;
+    private RegisterAppService registerAppService;
 
     @Autowired
     private DomainToDomainRepository domainToDomainRepo;
@@ -82,7 +82,7 @@ public class RegisterAppHelperTest extends TestContainersSetup {
         var app = new Application(1L, "testApp");
         applicationRepository.save(app);
         var dto = new RegisterAppDtoIn(app.code(), "someUser");
-        BusinessException err = assertThrows(BusinessException.class, () -> registerAppHelper.registerApp(dto));
+        BusinessException err = assertThrows(BusinessException.class, () -> registerAppService.registerApp(dto));
         assertEquals(AppAlreadyExistsException.CODE, err.getCode());
     }
 
@@ -90,7 +90,7 @@ public class RegisterAppHelperTest extends TestContainersSetup {
     @DisplayName("New Application is successfully registered")
     public void appAlreadyPresent() {
         var dto = new RegisterAppDtoIn("testApp", "someUser");
-        var res = registerAppHelper.registerApp(dto);
+        var res = registerAppService.registerApp(dto);
         assertNotNull(res);
         assertEquals(dto.app(), res.code());
         var storedDomains = domainRepository.listAll();

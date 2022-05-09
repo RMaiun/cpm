@@ -1,12 +1,10 @@
-package dev.rmaiun.cpm.helper;
+package dev.rmaiun.cpm.service;
 
 import dev.rmaiun.cpm.dto.ApplicationConfigurationDto;
 import dev.rmaiun.cpm.dto.EmptyDto;
 import dev.rmaiun.cpm.dto.GroupRoleDto;
 import dev.rmaiun.cpm.exception.AppNotFoundException;
 import dev.rmaiun.cpm.exception.UserHasNoRightsException;
-import dev.rmaiun.cpm.model.DomainService;
-import dev.rmaiun.cpm.model.UserGroupService;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.utils.Constants;
 import dev.rmaiun.cpm.utils.RoleTypeMapper;
@@ -14,14 +12,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class ApplicationConfigurationHelper {
+public class ApplicationConfigurationService {
 
     private final ApplicationRepository applicationRepository;
     private final DomainService domainService;
     private final UserGroupService userGroupService;
     private final AppDataCleaner appDataCleaner;
 
-    public ApplicationConfigurationHelper(
+    public ApplicationConfigurationService(
             ApplicationRepository applicationRepository,
             DomainService domainService,
             UserGroupService userGroupService,

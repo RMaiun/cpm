@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.helper;
+package dev.rmaiun.cpm.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
@@ -37,13 +37,13 @@ import org.springframework.util.StreamUtils;
             "/db/migration/V7__create_domain_to_domain_table.sql"
         },
         executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
-public class ApplicationConfigurationHelperTest extends TestContainersSetup {
+public class ApplicationConfigurationServiceTest extends TestContainersSetup {
 
     @Autowired
-    private RegisterAppHelper registerAppHelper;
+    private RegisterAppService registerAppService;
 
     @Autowired
-    private ApplicationConfigurationHelper applicationConfigurationHelper;
+    private ApplicationConfigurationService applicationConfigurationService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -63,11 +63,11 @@ public class ApplicationConfigurationHelperTest extends TestContainersSetup {
     @DisplayName("Application Configuration was successfully processed")
     public void appCfgSuccessfulFlowTest() throws IOException {
         var app = new Application(1L, "MARI");
-        registerAppHelper.registerApp(new RegisterAppDtoIn("MARI", "testUser"));
+        registerAppService.registerApp(new RegisterAppDtoIn("MARI", "testUser"));
         String json = StreamUtils.copyToString(
                 this.getClass().getResourceAsStream("/db/dataset/test_appcfg.json"), Charset.defaultCharset());
         ApplicationConfigurationDto dto = objectMapper.readValue(json, ApplicationConfigurationDto.class);
-        var result = applicationConfigurationHelper.processAppConfig("testUser", dto);
+        var result = applicationConfigurationService.processAppConfig("testUser", dto);
         assertNotNull(result);
     }
 }

@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.model;
+package dev.rmaiun.cpm.service;
 
 import static dev.rmaiun.cpm.doman.RoleType.WRITER;
 import static java.util.Objects.isNull;

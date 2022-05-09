@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.helper;
+package dev.rmaiun.cpm.service;
 
 import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;

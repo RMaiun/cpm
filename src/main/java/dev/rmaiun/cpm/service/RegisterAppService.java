@@ -1,4 +1,4 @@
-package dev.rmaiun.cpm.helper;
+package dev.rmaiun.cpm.service;
 
 import static dev.rmaiun.cpm.utils.Constants.APP_MANAGERS_GROUP;
 import static dev.rmaiun.cpm.utils.Constants.APP_OWNERS_GROUP;
@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class RegisterAppHelper {
+public class RegisterAppService {
 
     private final ApplicationRepository appRepo;
     private final GroupRepository businessGroupRepo;
@@ -37,7 +37,7 @@ public class RegisterAppHelper {
     private final UserGroupRelationRepository userGroupRelationRepo;
     private final DomainToDomainRepository domainToDomainRepo;
 
-    public RegisterAppHelper(
+    public RegisterAppService(
             ApplicationRepository appRepo,
             GroupRepository businessGroupRepo,
             RoleRepository businessRoleRepo,
