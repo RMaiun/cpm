@@ -32,7 +32,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 @Sql(
         scripts = {
-            "/db/scripts/V1__create_schema_cpm.sql",
+            "/db/scripts/create_schema_cpm.sql",
             "/db/migration/V1__create_app_table.sql",
             "/db/migration/V2__create_domain_table.sql",
             "/db/migration/V3__create_business_role_table.sql",
@@ -73,7 +73,7 @@ public class RegisterAppServiceTest extends TestContainersSetup {
 
     @BeforeEach
     @AfterEach
-    @Sql(scripts = {"/db/scripts/V0__clean_env.sql"})
+    @Sql(scripts = {"/db/scripts/clean_env.sql"})
     public void setup() {}
 
     @Test

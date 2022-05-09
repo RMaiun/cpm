@@ -8,6 +8,7 @@ import dev.rmaiun.cpm.exception.UserHasNoRightsException;
 import dev.rmaiun.cpm.repository.ApplicationRepository;
 import dev.rmaiun.cpm.utils.Constants;
 import dev.rmaiun.cpm.utils.RoleTypeMapper;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,7 +53,9 @@ public class ApplicationConfigurationService {
                                 e.getKey(), domCfg.code(), RoleTypeMapper.authRoleToDomainTypes(e.getValue()))))
                 .toList();
         userGroupService.createMissingGroups(app, groupDtos);
-        userGroupService.assignUserToGroup(app, dto.relations());
+        if (MapUtils.isNotEmpty(dto.relations())) {
+            userGroupService.assignUserToGroup(app, dto.relations());
+        }
         return new EmptyDto();
     }
 }

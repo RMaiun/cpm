@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @Sql(
-        scripts = {"/db/scripts/V1__create_schema_cpm.sql", "/db/migration/V1__create_app_table.sql"},
+        scripts = {"/db/scripts/create_schema_cpm.sql", "/db/migration/V1__create_app_table.sql"},
         executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class ApplicationRepositoryTest extends TestContainersSetup {
 
