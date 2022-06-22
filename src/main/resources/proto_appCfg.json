@@ -3,10 +3,6 @@
   "domains": [
     {
       "code": "configuration",
-      "implicitConfiguration": {
-        "ConfigurationManagers": "RW",
-        "Auditors": "R"
-      },
       "directConfiguration": {
         "ApplicationConfigManagers": "RW",
         "GatewaySubapp": "RW"
