@@ -73,8 +73,8 @@ tasks.named('test') {
 }
 
 flyway {
-  url = 'jdbc:postgresql://localhost:5432/postgres'
-  user = 'postgres'
-  password = 'postgres'
+  url = 'jdbc:postgresql://localhost:5432/root'
+  user = 'root'
+  password = 'password'
   defaultSchema = 'cpm'
 }
