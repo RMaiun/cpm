@@ -12,26 +12,28 @@ import org.springframework.stereotype.Service;
 @Service
 public class AuthorizationService {
 
-    private final UserGroupService userGroupService;
+  private final UserGroupService userGroupService;
 
-    public AuthorizationService(UserGroupService userGroupService) {
-        this.userGroupService = userGroupService;
-    }
+  public AuthorizationService(UserGroupService userGroupService) {
+    this.userGroupService = userGroupService;
+  }
 
-    public AuthorizationResultDto authorizeUser(String user, AuthorizeUserDto dto) {
-        var userCanPerformAuth =
-                userGroupService.checkUserAssignedToGroup(user, dto.app(), Constants.APP_MANAGERS_GROUP);
-        if (!userCanPerformAuth) {
-            var msg = String.format("User %s can't perform authorization actions", user);
-            throw new UserHasNoRightsException(msg);
-        }
-        var groups =
-                userGroupService.findGroupsForUserByDomain(dto.app(), dto.domain(), dto.authType(), dto.user()).stream()
-                        .map(BusinessGroup::code)
-                        .distinct()
-                        .collect(Collectors.toList());
-        return CollectionUtils.isNotEmpty(groups)
-                ? AuthorizationResultDto.success(groups)
-                : AuthorizationResultDto.failure();
+  public AuthorizationResultDto authorizeUser(String user, AuthorizeUserDto dto) {
+    var userCanPerformAuth =
+        userGroupService.checkUserAssignedToGroup(user, dto.app(), Constants.APP_MANAGERS_GROUP);
+    if (!userCanPerformAuth) {
+      var msg = String.format("User %s can't perform authorization actions", user);
+      throw new UserHasNoRightsException(msg);
     }
+    var groups =
+        userGroupService
+            .findGroupsForUserByDomain(dto.app(), dto.domain(), dto.authType(), dto.user())
+            .stream()
+            .map(BusinessGroup::code)
+            .distinct()
+            .collect(Collectors.toList());
+    return CollectionUtils.isNotEmpty(groups)
+        ? AuthorizationResultDto.success(groups)
+        : AuthorizationResultDto.failure();
+  }
 }

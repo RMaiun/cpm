@@ -15,41 +15,41 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserGroupRelationRepository extends GenericRepository<UserGroupRelation> {
 
-    public UserGroupRelationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
+  public UserGroupRelationRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    super(jdbcTemplate);
+  }
 
-    public void deleteByGroupIds(List<Long> groupIds) {
-        if (CollectionUtils.isNotEmpty(groupIds)) {
-            var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
-            var params = new MapSqlParameterSource("ids", groupIds);
-            jdbcTemplate.update(query, params);
-        }
+  public void deleteByGroupIds(List<Long> groupIds) {
+    if (CollectionUtils.isNotEmpty(groupIds)) {
+      var query = "DELETE FROM user_group WHERE user_group.group_id in (:ids)";
+      var params = new MapSqlParameterSource("ids", groupIds);
+      jdbcTemplate.update(query, params);
     }
+  }
 
-    public boolean relationExists(UserGroupRelation ugr) {
-        var query = "SELECT * from user_group ug where ug.uid = :user and ug.group_id = :groupId";
-        var params = new MapSqlParameterSource("user", ugr.uid()).addValue("groupId", ugr.groupId());
-        List<UserGroupRelation> res = jdbcTemplate.query(query, params, rowMapper());
-        return Optional.ofNullable(DataAccessUtils.singleResult(res)).isPresent();
-    }
+  public boolean relationExists(UserGroupRelation ugr) {
+    var query = "SELECT * from user_group ug where ug.uid = :user and ug.group_id = :groupId";
+    var params = new MapSqlParameterSource("user", ugr.uid()).addValue("groupId", ugr.groupId());
+    List<UserGroupRelation> res = jdbcTemplate.query(query, params, rowMapper());
+    return Optional.ofNullable(DataAccessUtils.singleResult(res)).isPresent();
+  }
 
-    @Override
-    public SqlParameterSource parameterSource(UserGroupRelation o) {
-        return new MapSqlParameterSource("uid", o.uid()).addValue("group_id", o.groupId());
-    }
+  @Override
+  public SqlParameterSource parameterSource(UserGroupRelation o) {
+    return new MapSqlParameterSource("uid", o.uid()).addValue("group_id", o.groupId());
+  }
 
-    @Override
-    public RowMapper<UserGroupRelation> rowMapper() {
-        return (rs, rowNum) -> {
-            var uid = rs.getString("uid");
-            var gid = rs.getLong("group_id");
-            return new UserGroupRelation(uid, gid);
-        };
-    }
+  @Override
+  public RowMapper<UserGroupRelation> rowMapper() {
+    return (rs, rowNum) -> {
+      var uid = rs.getString("uid");
+      var gid = rs.getLong("group_id");
+      return new UserGroupRelation(uid, gid);
+    };
+  }
 
-    @Override
-    protected String table() {
-        return "user_group";
-    }
+  @Override
+  protected String table() {
+    return "user_group";
+  }
 }

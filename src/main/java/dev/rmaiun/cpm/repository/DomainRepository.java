@@ -14,52 +14,52 @@ import org.springframework.stereotype.Component;
 @Component
 public class DomainRepository extends GenericRepository<Domain> {
 
-    public DomainRepository(NamedParameterJdbcTemplate jdbcTemplate) {
-        super(jdbcTemplate);
-    }
+  public DomainRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    super(jdbcTemplate);
+  }
 
-    public Optional<Domain> findDomainByApplication(String domainCode, String appCode) {
-        var query =
-                """
+  public Optional<Domain> findDomainByApplication(String domainCode, String appCode) {
+    var query =
+        """
 				select * from domain d
 				inner join application a on a.id = d.app_id
 				where a.code = :appCode and d.code = :domainCode
 				""";
-        var params = new MapSqlParameterSource("appCode", appCode).addValue("domainCode", domainCode);
-        var res = jdbcTemplate.query(query, params, rowMapper());
-        return Optional.ofNullable(DataAccessUtils.singleResult(res));
-    }
+    var params = new MapSqlParameterSource("appCode", appCode).addValue("domainCode", domainCode);
+    var res = jdbcTemplate.query(query, params, rowMapper());
+    return Optional.ofNullable(DataAccessUtils.singleResult(res));
+  }
 
-    public List<Domain> listDomainByApplication(String appCode) {
-        var query =
-                """
+  public List<Domain> listDomainByApplication(String appCode) {
+    var query =
+        """
 				select * from domain d
 				inner join application a on a.id = d.app_id
 				where a.code = :appCode
 				""";
-        var params = new MapSqlParameterSource("appCode", appCode);
-        return jdbcTemplate.query(query, params, rowMapper());
-    }
+    var params = new MapSqlParameterSource("appCode", appCode);
+    return jdbcTemplate.query(query, params, rowMapper());
+  }
 
-    @Override
-    public SqlParameterSource parameterSource(Domain o) {
-        return new MapSqlParameterSource("id", o.id())
-                .addValue("code", o.code())
-                .addValue("app_id", o.appId());
-    }
+  @Override
+  public SqlParameterSource parameterSource(Domain o) {
+    return new MapSqlParameterSource("id", o.id())
+        .addValue("code", o.code())
+        .addValue("app_id", o.appId());
+  }
 
-    @Override
-    public RowMapper<Domain> rowMapper() {
-        return (rs, rowNum) -> {
-            var id = rs.getLong("id");
-            var code = rs.getString("code");
-            var appId = rs.getLong("app_id");
-            return new Domain(id, code, appId);
-        };
-    }
+  @Override
+  public RowMapper<Domain> rowMapper() {
+    return (rs, rowNum) -> {
+      var id = rs.getLong("id");
+      var code = rs.getString("code");
+      var appId = rs.getLong("app_id");
+      return new Domain(id, code, appId);
+    };
+  }
 
-    @Override
-    protected String table() {
-        return "domain";
-    }
+  @Override
+  protected String table() {
+    return "domain";
+  }
 }
