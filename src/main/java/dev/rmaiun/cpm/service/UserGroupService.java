@@ -10,6 +10,7 @@ import static java.util.stream.Collectors.toSet;
 
 import dev.rmaiun.cpm.doman.Application;
 import dev.rmaiun.cpm.doman.BusinessGroup;
+import dev.rmaiun.cpm.doman.BusinessRole;
 import dev.rmaiun.cpm.doman.GroupRoleRelation;
 import dev.rmaiun.cpm.doman.UserGroupRelation;
 import dev.rmaiun.cpm.dto.DomainAuthorizationType;
@@ -112,13 +113,15 @@ public class UserGroupService {
     var domainRoles = roleRepository.findRolesByAppDomain(app.code(), dto.domain());
     domainRoles.stream()
         .filter(role -> dto.roleTypes().contains(role.type()))
-        .forEach(
-            role ->
-                groupRoleRepository.saveWithoutId(new GroupRoleRelation(group.id(), role.id())));
+        .forEach(role -> saveGroupWithoutId(group, role));
   }
 
-  private BusinessGroup createGroup(Application app, GroupRoleDto dto) {
+  public BusinessGroup createGroup(Application app, GroupRoleDto dto) {
     var gid = groupRepository.save(new BusinessGroup(0L, dto.group(), app.id()));
     return new BusinessGroup(gid, dto.group(), app.id());
+  }
+
+  public void saveGroupWithoutId(BusinessGroup group, BusinessRole role) {
+    groupRoleRepository.saveWithoutId(new GroupRoleRelation(group.id(), role.id()));
   }
 }

@@ -46,12 +46,13 @@ public class DomainService {
     return domainRepository
         .findDomainByApplication(domain, app.code())
         .map(Domain::id)
-        .orElseGet(
-            () -> {
-              var id = domainRepository.save(new Domain(0L, domain, app.id()));
-              roleRepository.save(new BusinessRole(0L, id, RoleType.READER));
-              roleRepository.save(new BusinessRole(0L, id, RoleType.WRITER));
-              return id;
-            });
+        .orElseGet(() -> createDomain(app, domain));
+  }
+
+  public long createDomain(Application app, String domain) {
+    var id = domainRepository.save(new Domain(0L, domain, app.id()));
+    roleRepository.save(new BusinessRole(0L, id, RoleType.READER));
+    roleRepository.save(new BusinessRole(0L, id, RoleType.WRITER));
+    return id;
   }
 }

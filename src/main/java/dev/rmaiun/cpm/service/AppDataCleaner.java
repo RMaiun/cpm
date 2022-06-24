@@ -52,10 +52,7 @@ public class AppDataCleaner {
         domain2domainRepository.listByDomains(domains).stream().map(DomainToDomain::id).toList();
     var groups =
         groupRepository.listByApp(app.code()).stream()
-            .filter(
-                g ->
-                    !List.of(Constants.APP_MANAGERS_GROUP, Constants.APP_OWNERS_GROUP)
-                        .contains(g.code()))
+            .filter(this::nonSystemGroup)
             .map(BusinessGroup::id)
             .toList();
     var roles =
@@ -69,5 +66,10 @@ public class AppDataCleaner {
     roleRepository.delete(roles);
     domain2domainRepository.delete(domainToDomains);
     domainRepository.delete(domains);
+  }
+
+  private boolean nonSystemGroup(BusinessGroup group) {
+    return !List.of(Constants.APP_MANAGERS_GROUP, Constants.APP_OWNERS_GROUP)
+        .contains(group.code());
   }
 }
