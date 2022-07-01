@@ -1,0 +1,53 @@
+{
+  "appCode": "MARI",
+  "domains": [
+    {
+      "code": "configuration",
+      "divisible": false,
+      "isolated": false,
+      "groupsConfig": {
+        "ApplicationConfigManagers": "RW",
+        "GatewaySubapp": "RW"
+      }
+    },
+    {
+      "code": "area",
+      "divisible": false,
+      "isolated": false,
+      "parent": "configuration",
+      "directConfiguration": {
+        "AreaManagers": "RW",
+        "AreaAuditors": "R"
+      }
+    },
+    {
+      "code": "border",
+      "divisible": false,
+      "isolated": false,
+      "parent": "configuration",
+      "directConfiguration": {
+        "AreaManagers": "RW",
+        "AreaAuditors": "R"
+      }
+    },
+    {
+      "code": "secrets",
+      "divisible": false,
+      "isolated": true,
+      "parent": "configuration",
+      "directConfiguration": {
+        "AreaManagers": "RW",
+        "AreaAuditors": "R"
+      }
+    }
+  ],
+  "relations": {
+    "AreaManagers": [
+      "13-2936-1",
+      "12-4447-1"
+    ],
+    "GatewaySubapp": [
+      "21-0428-1"
+    ]
+  }
+}
